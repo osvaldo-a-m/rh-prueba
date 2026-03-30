@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Incorporación | Hotel Huayacán</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="logo">
+      <div class="logo-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      </div>
+      <span class="logo-text">Huayacán</span>
+    </div>
+    <div class="nav-right">
+      <span class="user-greeting" id="user-greeting">Bienvenido</span>
+      <button class="btn-ghost btn-sm" onclick="doLogout()">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <!-- Progress Bar -->
+  <div class="steps-bar">
+    <div class="steps-track">
+      <div class="step-item active" id="step-nav-1">
+        <div class="step-circle">
+          <span class="step-num">1</span>
+          <svg class="step-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <span class="step-label">Video</span>
+      </div>
+      <div class="step-line" id="line-1"></div>
+      <div class="step-item" id="step-nav-2">
+        <div class="step-circle"><span class="step-num">2</span><svg class="step-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <span class="step-label">Datos</span>
+      </div>
+      <div class="step-line" id="line-2"></div>
+      <div class="step-item" id="step-nav-3">
+        <div class="step-circle"><span class="step-num">3</span><svg class="step-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <span class="step-label">Documentos</span>
+      </div>
+      <div class="step-line" id="line-3"></div>
+      <div class="step-item" id="step-nav-4">
+        <div class="step-circle"><span class="step-num">4</span><svg class="step-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <span class="step-label">Opcionales</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Paso 1: VIDEO -->
+  <main class="container step-container" id="step-1">
+    <div class="step-header">
+      <span class="step-badge">Paso 1 de 4</span>
+      <h1 class="step-title">Video de Inducción</h1>
+      <p class="step-desc">Bienvenido al equipo. Por favor ve el video completo para continuar con tu registro.</p>
+    </div>
+
+    <div class="video-card">
+      <div class="video-container">
+        <div class="video-placeholder" id="video-placeholder">
+          <div class="play-btn" id="play-btn" onclick="playVideo()" aria-label="Reproducir video">
+            <svg viewBox="0 0 24 24" fill="white" width="36" height="36"><path d="M8 5v14l11-7z" /></svg>
+          </div>
+          <span class="video-cta-text">Haz clic para reproducir el video de bienvenida</span>
+        </div>
+        <video id="induction-video" preload="metadata" controls style="display:none;" onended="onVideoEnded()" ontimeupdate="onVideoProgress()">
+          <source src="induccion.mp4" type="video/mp4" />
+          Tu navegador no soporta video HTML5.
+        </video>
+      </div>
+
+      <div class="video-status-row">
+        <div class="video-status-pill" id="video-status-pill">
+          <span class="status-dot pending" id="status-dot"></span>
+          <span id="status-text">Pendiente de reproducción</span>
+        </div>
+        <div class="video-progress-text" id="video-progress-text"></div>
+      </div>
+
+      <div class="notice-box" style="display:none;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        <span>Debes ver el video completo para desbloquear el siguiente paso.</span>
+      </div>
+    </div>
+
+    <div class="step-actions">
+      <!-- BOTON DESBLOQUEADO PARA PRUEBAS (disabled removido, ready agregado) -->
+      <button class="btn-primary btn-next ready" id="btn-step-1" onclick="goToStep(2)">
+        <span>Siguiente</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+  </main>
+
+  <!-- Paso 2: DATOS PERSONALES -->
+  <main class="container step-container" id="step-2" style="display:none;">
+    <div class="step-header">
+      <span class="step-badge">Paso 2 de 4</span>
+      <h1 class="step-title">Datos Personales</h1>
+      <p class="step-desc">Completa tu información. El correo electrónico es opcional.</p>
+    </div>
+
+    <div class="form-card">
+      <form id="personal-form" novalidate>
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label for="f-nombre">Nombre completo <span class="req">*</span></label>
+            <input type="text" id="f-nombre" name="nombre" placeholder="Ej: María García López" required />
+            <p class="field-error" id="err-nombre"></p>
+          </div>
+          <div class="form-group">
+            <label for="f-edad">Edad <span class="req">*</span></label>
+            <input type="number" id="f-edad" name="edad" placeholder="Ej: 28" min="16" max="80" required />
+            <p class="field-error" id="err-edad"></p>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="f-direccion">Dirección completa <span class="req">*</span></label>
+          <input type="text" id="f-direccion" name="direccion" placeholder="Calle, número, colonia, municipio, estado" required />
+          <p class="field-error" id="err-direccion"></p>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label for="f-telefono">Número de teléfono <span class="req">*</span></label>
+            <input type="tel" id="f-telefono" name="telefono" placeholder="10 dígitos" maxlength="15" required />
+            <p class="field-error" id="err-telefono"></p>
+          </div>
+          <div class="form-group">
+            <label for="f-email">
+              Correo electrónico personal
+              <span class="optional-badge">Opcional</span>
+            </label>
+            <input type="email" id="f-email" name="email_contacto" placeholder="tu@correo.com" />
+            <p class="field-error" id="err-email"></p>
+          </div>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label for="f-departamento">Departamento / Área <span class="req">*</span></label>
+            <select id="f-departamento" name="departamento" required style="width:100%;padding:12px 14px;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-main);font-family:inherit;font-size:0.9rem;outline:none;cursor:pointer;transition:border-color var(--transition);">
+              <option value="">Selecciona tu área…</option>
+              <option value="ama_llaves">🛀 Ama de Llaves / Limpieza</option>
+              <option value="seguridad">🛡️ Seguridad</option>
+              <option value="mantenimiento">🔧 Mantenimiento</option>
+              <option value="marketing">📢 Marketing</option>
+              <option value="administracion">📋 Administración / Recepción</option>
+              <option value="restaurante">🍽️ Restaurante</option>
+              <option value="cocina">👨‍🍳 Cocina</option>
+              <option value="eventos">🎉 Eventos</option>
+              <option value="spa">💪 Spa</option>
+            </select>
+            <p class="field-error" id="err-departamento"></p>
+          </div>
+          <div class="form-group">
+            <label for="f-puesto">Puesto / Cargo <span class="req">*</span></label>
+            <input type="text" id="f-puesto" name="puesto" placeholder="Ej: Camarista, Recepcionista…" required />
+            <p class="field-error" id="err-puesto"></p>
+          </div>
+        </div>
+
+        <div class="step-actions">
+          <button type="button" class="btn-ghost" onclick="goToStep(1)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+            <span>Anterior</span>
+          </button>
+          <button type="submit" class="btn-primary btn-next">
+            <span>Siguiente</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <!-- Paso 3: DOCUMENTOS OBLIGATORIOS -->
+  <main class="container step-container" id="step-3" style="display:none;">
+    <div class="step-header">
+      <span class="step-badge">Paso 3 de 4</span>
+      <h1 class="step-title">Documentos Obligatorios</h1>
+      <p class="step-desc">Sube todos los documentos requeridos. Formatos permitidos: JPG, PNG, PDF (máx. 15 MB).</p>
+    </div>
+
+    <div class="docs-section-card">
+      <div class="docs-progress-row">
+        <span id="docs-count-label">0 de 9 documentos subidos</span>
+        <div class="docs-mini-bar"><div class="docs-mini-fill" id="docs-mini-fill" style="width:0%"></div></div>
+      </div>
+
+      <div class="docs-grid">
+
+        <div class="doc-card" id="card-solicitud">
+          <div class="doc-header">
+            <span class="doc-icon">📋</span>
+            <div class="doc-info"><span class="doc-title">Solicitud de Empleo y Foto / CV</span><span class="doc-badge" id="badge-solicitud">Requerido</span></div>
+          </div>
+          <div class="upload-zone" id="zone-solicitud" onclick="triggerUpload('solicitud')" ondragover="handleDragOver(event)" ondrop="handleDrop(event,'solicitud')">
+            <div class="upload-icon">📄</div>
+            <p class="upload-label">Clic o arrastra</p>
+            <p class="upload-sub">JPG, PNG o PDF</p>
+            <div class="file-preview" id="preview-solicitud" style="display:none;"></div>
+          </div>
+          <input type="file" id="file-solicitud" accept="image/*,.pdf" style="display:none;" onchange="handleFile(this,'solicitud',true)" />
+          <p class="field-error" id="error-solicitud"></p>
+        </div>
+
+        <div class="doc-card" id="card-ine">
+          <div class="doc-header">
+            <span class="doc-icon">🪪</span>
+            <div class="doc-info"><span class="doc-title">INE</span><span class="doc-badge" id="badge-ine">Requerido</span></div>
+          </div>
+          <div class="upload-zone" id="zone-ine" onclick="triggerUpload('ine')" ondragover="handleDragOver(event)" ondrop="handleDrop(event,'ine')">
+            <div class="upload-icon">📄</div>
+            <p class="upload-label">Clic o arrastra</p>
+            <p class="upload-sub">JPG, PNG o PDF</p>
+            <div class="file-preview" id="preview-ine" style="display:none;"></div>
+          </div>
+          <input type="file" id="file-ine" accept="image/*,.pdf" style="display:none;" onchange="handleFile(this,'ine',true)" />
+          <p class="field-error" id="error-ine"></p>
+        </div>
+
+        <div class="doc-card" id="card-acta">
+          <div class="doc-header">
+            <span class="doc-icon">📜</span>
+            <div class="doc-info"><span class="doc-title">Acta de Nacimiento</span><span class="doc-badge" id="badge-acta">Requerido</span></div>
+          </div>
+          <div class="upload-zone" id="zone-acta" onclick="triggerUpload('acta')" ondragover="handleDragOver(event)" ondrop="handleDrop(event,'acta')">
+            <div class="upload-icon">📄</div>
+            <p class="upload-label">Clic o arrastra</p>
+            <p class="upload-sub">JPG, PNG o PDF</p>
+            <div class="file-preview" id="preview-acta" style="display:none;"></div>
+          </div>
+          <input type="file" id="file-acta" accept="image/*,.pdf" style="display:none;" onchange="handleFile(this,'acta',true)" />
+          <p class="field-error" id="error-acta"></p>
+        </div>
+
+        <div class="doc-card" id="card-curp">
+          <div class="doc-header">
+            <span class="doc-icon">🔏</span>
+            <div class="doc-info"><span class="doc-title">CURP</span><span class="doc-badge" id="badge-curp">Requerido</span></div>
+          </div>
+          <div class="upload-zone" id="zone-curp" onclick="triggerUpload('curp')" ondragover="handleDragOver(event)" ondrop="handleDrop(event,'curp')">
+            <div class="upload-icon">📄</div>
+            <p class="upload-label">Clic o arrastra</p>
+            <p class="upload-sub">JPG, PNG o PDF</p>
+            <div class="file-preview" id="preview-curp" style="display:none;"></div>
+          </div>
+          <input type="file" id="file-curp" accept="image/*,.pdf" style="display:none;" onchange="handleFile(this,'curp',true)" />
+          <p class="field-error" id="error-curp"></p>
+        </div>
+
+        <div class="doc-card" id="card-rfc">
+          <div class="doc-header">
+            <span class="doc-icon">💼</span>
+            <div class="doc-info"><span class="doc-title">RFC</span><span class="doc-badge" id="badge-rfc">Requerido</span></div>
+          </div>
+          <div class="upload-zone" id="zone-rfc" onclick="triggerUpload('rfc')" ondragover="handleDragOver(event)" ondrop="handleDrop(event,'rfc')">
+            <div class="upload-icon">📄</div>
+            <p class="upload-label">Clic o arrastra</p>
+            <p class="upload-sub">JPG, PNG o PDF</p>
+            <div class="file-preview" id="preview-rfc" style="display:none;"></div>
+          </div>
+          <input type="file" id="file-rfc" accept="image/*,.pdf" style="display:none;" onchange="handleFile(this,'rfc',true)" />
+          <p class="field-error" id="error-rfc"></p>
+        </div>
+
+        <div class="doc-card" id="card-credito">
+          <div class="doc-header">
+            <span class="doc-icon">🏦</span>
+            <div class="doc-info"><span class="doc-title">Crédito INFONAVIT / FONACOT</span><span class="doc-badge" id="badge-credito">Requerido</span></div>
+          </div>
+          <div class="upload-zone" id="zone-credito" onclick="triggerUpload('credito')" ondragover="handleDragOver(event)" ondrop="handleDrop(event,'credito')">
+            <div class="upload-icon">📄</div>
+            <p class="upload-label">Clic o arrastra</p>
+            <p class="upload-sub">JPG, PNG o PDF</p>
+            <div class="file-preview" id="preview-credito" style="display:none;"></div>
+          </div>
+          <input type="file" id="file-credito" accept="image/*,.pdf" style="display:none;" onchange="handleFile(this,'credito',true)" />
+          <p class="field-error" id="error-credito"></p>
+        </div>
+
+        <div class="doc-card" id="card-comprobante">
+          <div class="doc-header">
+            <span class="doc-icon">🏡</span>
+            <div class="doc-info"><span class="doc-title">Comprobante de Domicilio (máx. 3 meses)</span><span class="doc-badge" id="badge-comprobante">Requerido</span></div>
+          </div>
+          <div class="upload-zone" id="zone-comprobante" onclick="triggerUpload('comprobante')" ondragover="handleDragOver(event)" ondrop="handleDrop(event,'comprobante')">
+            <div class="upload-icon">📄</div>
+            <p class="upload-label">Clic o arrastra</p>
+            <p class="upload-sub">JPG, PNG o PDF</p>
+            <div class="file-preview" id="preview-comprobante" style="display:none;"></div>
+          </div>
+          <input type="file" id="file-comprobante" accept="image/*,.pdf" style="display:none;" onchange="handleFile(this,'comprobante',true)" />
+          <p class="field-error" id="error-comprobante"></p>
+        </div>
+
+        <div class="doc-card" id="card-estudios">
+          <div class="doc-header">
+            <span class="doc-icon">🎓</span>
+            <div class="doc-info"><span class="doc-title">Comprobante de Estudios</span><span class="doc-badge" id="badge-estudios">Requerido</span></div>
+          </div>
+          <div class="upload-zone" id="zone-estudios" onclick="triggerUpload('estudios')" ondragover="handleDragOver(event)" ondrop="handleDrop(event,'estudios')">
+            <div class="upload-icon">📄</div>
+            <p class="upload-label">Clic o arrastra</p>
+            <p class="upload-sub">JPG, PNG o PDF</p>
+            <div class="file-preview" id="preview-estudios" style="display:none;"></div>
+          </div>
+          <input type="file" id="file-estudios" accept="image/*,.pdf" style="display:none;" onchange="handleFile(this,'estudios',true)" />
+          <p class="field-error" id="error-estudios"></p>
+        </div>
+
+        <div class="doc-card" id="card-estado_cuenta">
+          <div class="doc-header">
+            <span class="doc-icon">💳</span>
+            <div class="doc-info"><span class="doc-title">Estado de Cuenta CLABE BBVA</span><span class="doc-badge" id="badge-estado_cuenta">Requerido</span></div>
+          </div>
+          <div class="upload-zone" id="zone-estado_cuenta" onclick="triggerUpload('estado_cuenta')" ondragover="handleDragOver(event)" ondrop="handleDrop(event,'estado_cuenta')">
+            <div class="upload-icon">📄</div>
+            <p class="upload-label">Clic o arrastra</p>
+            <p class="upload-sub">JPG, PNG o PDF</p>
+            <div class="file-preview" id="preview-estado_cuenta" style="display:none;"></div>
+          </div>
+          <input type="file" id="file-estado_cuenta" accept="image/*,.pdf" style="display:none;" onchange="handleFile(this,'estado_cuenta',true)" />
+          <p class="field-error" id="error-estado_cuenta"></p>
+        </div>
+
+      </div><!-- /.docs-grid -->
+
+      <div class="step-actions">
+        <button class="btn-ghost" onclick="goToStep(2)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          <span>Anterior</span>
+        </button>
+        <button class="btn-primary btn-next" id="btn-step-3" onclick="validateAndNextStep3()" disabled>
+          <span>Siguiente</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Paso 4: DOCUMENTOS OPCIONALES -->
+  <main class="container step-container" id="step-4" style="display:none;">
+    <div class="step-header">
+      <span class="step-badge">Paso 4 de 4</span>
+      <h1 class="step-title">Documentos Opcionales</h1>
+      <p class="step-desc">Estos documentos no son obligatorios, pero ayudan a completar tu expediente. Puedes subirlos ahora o más tarde desde tu perfil.</p>
+    </div>
+
+    <div class="docs-section-card optional-section">
+      <div class="optional-notice">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 8 12 12 14 14"/></svg>
+        <span>Puedes omitir este paso y subir estos documentos desde tu perfil cuando los tengas disponibles.</span>
+      </div>
+
+      <div class="docs-grid docs-grid-2col">
+
+        <div class="doc-card optional" id="card-nss">
+          <div class="doc-header">
+            <span class="doc-icon">🏥</span>
+            <div class="doc-info">
+              <span class="doc-title">Número de Seguridad Social (NSS)</span>
+              <span class="doc-badge optional-badge-doc" id="badge-nss">Opcional</span>
+            </div>
+          </div>
+          <div class="upload-zone" id="zone-nss" onclick="triggerUpload('nss')" ondragover="handleDragOver(event)" ondrop="handleDrop(event,'nss')">
+            <div class="upload-icon">📄</div>
+            <p class="upload-label">Clic o arrastra</p>
+            <p class="upload-sub">JPG, PNG o PDF</p>
+            <div class="file-preview" id="preview-nss" style="display:none;"></div>
+          </div>
+          <input type="file" id="file-nss" accept="image/*,.pdf" style="display:none;" onchange="handleFile(this,'nss',false)" />
+        </div>
+
+        <div class="doc-card optional" id="card-recomendacion">
+          <div class="doc-header">
+            <span class="doc-icon">📝</span>
+            <div class="doc-info">
+              <span class="doc-title">Cartas de Recomendación / Laborales</span>
+              <span class="doc-badge optional-badge-doc" id="badge-recomendacion">Opcional</span>
+            </div>
+          </div>
+          <div class="upload-zone" id="zone-recomendacion" onclick="triggerUpload('recomendacion')" ondragover="handleDragOver(event)" ondrop="handleDrop(event,'recomendacion')">
+            <div class="upload-icon">📄</div>
+            <p class="upload-label">Clic o arrastra</p>
+            <p class="upload-sub">JPG, PNG o PDF</p>
+            <div class="file-preview" id="preview-recomendacion" style="display:none;"></div>
+          </div>
+          <input type="file" id="file-recomendacion" accept="image/*,.pdf" style="display:none;" onchange="handleFile(this,'recomendacion',false)" />
+        </div>
+
+      </div>
+
+      <div class="step-actions">
+        <button class="btn-ghost" onclick="goToStep(3)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          <span>Anterior</span>
+        </button>
+        <button class="btn-primary btn-finish" id="btn-finish" onclick="finishOnboarding()">
+          <span class="btn-text">Finalizar y ver mi expediente</span>
+          <span class="btn-loader" style="display:none;">
+            <svg class="spinner" viewBox="0 0 50 50"><circle cx="25" cy="25" r="20" fill="none" stroke-width="4"></circle></svg>
+          </span>
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="supabase.js"></script>
+  <!-- app.js es solo para el formulario antiguo, no se usa aquí -->
+  <script>
+    // ── Auth Guard ─────────────────────────────────────────
+    let currentUser = null;
+    const lockedDocs = {}; // tipo → document record (already uploaded to DB)
+
+    (async () => {
+      const session = await getSession();
+      if (!session) { window.location.href = 'index.html'; return; }
+      currentUser = session.user;
+
+      // 🧪 MODO PRUEBA: desbloquea el video inmediatamente
+      unlockVideo();
+
+      try {
+        const profile = await getProfile(currentUser.id);
+        if (profile.onboarding_completo) { window.location.href = 'perfil.html'; return; }
+
+        document.getElementById('user-greeting').textContent =
+          profile.nombre_completo ? `Hola, ${profile.nombre_completo.split(' ')[0]}` : 'Bienvenido';
+        if (profile.nombre_completo) document.getElementById('f-nombre').value = profile.nombre_completo;
+        if (profile.edad) document.getElementById('f-edad').value = profile.edad;
+        if (profile.direccion) document.getElementById('f-direccion').value = profile.direccion;
+        if (profile.telefono) document.getElementById('f-telefono').value = profile.telefono;
+        if (profile.departamento) document.getElementById('f-departamento').value = profile.departamento;
+        if (profile.puesto) document.getElementById('f-puesto').value = profile.puesto;
+        if (profile.email_contacto) document.getElementById('f-email').value = profile.email_contacto;
+
+        // Lock any documents already uploaded to Supabase
+        try {
+          const existingDocs = await getDocuments(currentUser.id);
+          existingDocs.forEach(doc => {
+            lockedDocs[doc.tipo] = doc;
+            lockDocZone(doc.tipo, doc);
+            files[doc.tipo] = '__locked__'; // mark as present for step 3 validation
+          });
+          updateStep3Button();
+        } catch (e) {
+          console.warn('Could not load existing docs:', e);
+        }
+      } catch {
+        // Profile may not exist yet — that's OK for new users
+      }
+    })();
+
+    async function doLogout() {
+      await signOut();
+      localStorage.clear(); sessionStorage.clear();
+      window.location.href = 'index.html';
+    }
+
+    // ── Step Navigation ────────────────────────────────────
+    let currentStep = 1;
+
+    function goToStep(n) {
+      document.getElementById(`step-${currentStep}`).style.display = 'none';
+      document.getElementById(`step-${n}`).style.display = 'block';
+      updateStepNav(n);
+      currentStep = n;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function updateStepNav(n) {
+      for (let i = 1; i <= 4; i++) {
+        const item = document.getElementById(`step-nav-${i}`);
+        item.classList.remove('active', 'done');
+        if (i < n) item.classList.add('done');
+        else if (i === n) item.classList.add('active');
+        if (i < 4) {
+          const line = document.getElementById(`line-${i}`);
+          line.classList.toggle('done', i < n);
+        }
+      }
+    }
+
+    // ── Video Logic ────────────────────────────────────────
+    let videoWatched = false;
+
+    function playVideo() {
+      const placeholder = document.getElementById('video-placeholder');
+      const video = document.getElementById('induction-video');
+      placeholder.style.display = 'none';
+      video.style.display = 'block';
+      video.play().catch(() => {});
+    }
+
+    function onVideoProgress() {
+      const video = document.getElementById('induction-video');
+      if (!video.duration) return;
+      const pct = Math.round((video.currentTime / video.duration) * 100);
+      const el = document.getElementById('video-progress-text');
+      if (el && pct > 0) el.textContent = `${pct}% visto`;
+
+      // 🧪 MODO PRUEBA: desbloquea en cuanto empiece el video (o al adelantar)
+      // Para producción, elimina esta línea ↓ (el onVideoEnded() se encarga)
+      if (!videoWatched && video.currentTime > 0) unlockVideo();
+    }
+
+
+    function onVideoEnded() {
+      videoWatched = true;
+      unlockVideo();
+      if (currentUser) markVideoWatched(currentUser.id).catch(() => {});
+    }
+
+    function unlockVideo() {
+      videoWatched = true;
+      const dot  = document.getElementById('status-dot');
+      const text = document.getElementById('status-text');
+      const pill = document.getElementById('video-status-pill');
+      const btn  = document.getElementById('btn-step-1');
+      if (dot)  { dot.classList.remove('pending'); dot.classList.add('done'); }
+      if (text) text.textContent = 'Video completado ✓';
+      if (pill) pill.classList.add('done');
+      if (btn)  { btn.disabled = false; btn.classList.add('ready'); }
+    }
+
+    // ── Step 2: Personal Form ──────────────────────────────
+    document.getElementById('personal-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const nombre       = document.getElementById('f-nombre').value.trim();
+      const edad         = parseInt(document.getElementById('f-edad').value);
+      const direccion    = document.getElementById('f-direccion').value.trim();
+      const telefono     = document.getElementById('f-telefono').value.trim();
+      const departamento = document.getElementById('f-departamento').value;
+      const puesto       = document.getElementById('f-puesto').value.trim();
+      const emailC       = document.getElementById('f-email').value.trim();
+
+      let valid = true;
+      clearErrors(['nombre','edad','direccion','telefono','departamento','puesto','email']);
+
+      if (!nombre)   { showErr('nombre', 'El nombre es obligatorio.'); valid = false; }
+      if (!edad || edad < 16 || edad > 80) { showErr('edad', 'Ingresa una edad válida.'); valid = false; }
+      if (!direccion){ showErr('direccion', 'La dirección es obligatoria.'); valid = false; }
+      if (!telefono || telefono.length < 10) { showErr('telefono', 'Número de teléfono inválido.'); valid = false; }
+      if (!departamento) { showErr('departamento', 'Selecciona tu departamento.'); valid = false; }
+      if (!puesto)   { showErr('puesto', 'El puesto es obligatorio.'); valid = false; }
+      if (emailC && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailC)) { showErr('email', 'Correo inválido.'); valid = false; }
+
+      if (!valid) return;
+
+      if (currentUser) {
+        try {
+          await upsertProfile(currentUser.id, { nombre_completo: nombre, edad, direccion, telefono, departamento, puesto, email_contacto: emailC || null });
+          document.getElementById('user-greeting').textContent = `Hola, ${nombre.split(' ')[0]}`;
+        } catch (err) { console.error('Error guardando perfil:', err); }
+      }
+      goToStep(3);
+    });
+
+    // ── Step 3: Required Docs ──────────────────────────────
+    const REQUIRED_DOCS = ['solicitud','ine','acta','curp','rfc','credito','comprobante','estudios','estado_cuenta'];
+    const OPTIONAL_DOCS = ['nss','recomendacion'];
+    const files = {};
+    const MAX_MB = 15;
+
+    function triggerUpload(tipo) {
+      document.getElementById(`file-${tipo}`).click();
+    }
+
+    function handleDragOver(e) { e.preventDefault(); e.currentTarget.classList.add('drag-over'); }
+
+    function handleDrop(e, tipo) {
+      e.preventDefault();
+      e.currentTarget.classList.remove('drag-over');
+      const f = e.dataTransfer.files[0];
+      if (f) processFile(f, tipo, [...REQUIRED_DOCS].includes(tipo));
+    }
+
+    function handleFile(input, tipo, required) {
+      if (input.files && input.files[0]) processFile(input.files[0], tipo, required);
+    }
+
+    function processFile(file, tipo, required) {
+      // Block if already submitted to Supabase
+      if (lockedDocs[tipo]) {
+        showDocErr(tipo, 'Este documento ya fue enviado y no puede ser reemplazado.');
+        return;
+      }
+      const sizeMB = file.size / (1024 * 1024);
+      const errEl = document.getElementById(`error-${tipo}`);
+      if (sizeMB > MAX_MB) { showDocErr(tipo, `Archivo muy grande (${sizeMB.toFixed(1)} MB). Máx ${MAX_MB} MB.`); return; }
+      if (!file.type.startsWith('image/') && file.type !== 'application/pdf') { showDocErr(tipo, 'Solo se aceptan imágenes o PDF.'); return; }
+      if (errEl) errEl.style.display = 'none';
+      files[tipo] = file;
+      updateDocZone(tipo, file, required);
+      if (required) updateStep3Button();
+    }
+
+    function updateDocZone(tipo, file, required) {
+      const zone  = document.getElementById(`zone-${tipo}`);
+      const prev  = document.getElementById(`preview-${tipo}`);
+      const badge = document.getElementById(`badge-${tipo}`);
+      const card  = document.getElementById(`card-${tipo}`);
+      zone.classList.add('has-file');
+      card.classList.add('has-file');
+      if (badge) { badge.textContent = '✓ Adjunto'; badge.classList.add('uploaded'); }
+      const sizeMB = (file.size/(1024*1024)).toFixed(2);
+      const img = file.type.startsWith('image/') ? `<img src="${URL.createObjectURL(file)}" alt="preview" />` : `<span class="file-emoji">📄</span>`;
+      prev.innerHTML = `<div class="file-preview-item">${img}<span class="file-name">${escapeHtml(file.name)}</span><span class="file-size">${sizeMB} MB</span><button class="file-remove" onclick="removeFile('${tipo}')" title="Quitar">✕</button></div>`;
+      zone.querySelector('.upload-icon').style.display = 'none';
+      zone.querySelector('.upload-label').style.display = 'none';
+      const sub = zone.querySelector('.upload-sub');
+      if (sub) sub.style.display = 'none';
+      prev.style.display = 'block';
+    }
+
+    function removeFile(tipo) {
+      // Cannot remove documents already submitted to Supabase
+      if (lockedDocs[tipo]) return;
+      files[tipo] = null;
+      const inp = document.getElementById(`file-${tipo}`);
+      if (inp) inp.value = '';
+      const zone  = document.getElementById(`zone-${tipo}`);
+      const prev  = document.getElementById(`preview-${tipo}`);
+      const badge = document.getElementById(`badge-${tipo}`);
+      const card  = document.getElementById(`card-${tipo}`);
+      zone.classList.remove('has-file');
+      card.classList.remove('has-file');
+      if (badge) {
+        const isRequired = REQUIRED_DOCS.includes(tipo);
+        badge.textContent = isRequired ? 'Requerido' : 'Opcional';
+        badge.classList.remove('uploaded');
+      }
+      zone.querySelector('.upload-icon').style.display = '';
+      zone.querySelector('.upload-label').style.display = '';
+      const sub = zone.querySelector('.upload-sub');
+      if (sub) sub.style.display = '';
+      prev.innerHTML = '';
+      prev.style.display = 'none';
+      updateStep3Button();
+    }
+
+    /** Lock a document zone that was already uploaded to Supabase (immutable) */
+    function lockDocZone(tipo, docRecord) {
+      const zone  = document.getElementById(`zone-${tipo}`);
+      const prev  = document.getElementById(`preview-${tipo}`);
+      const badge = document.getElementById(`badge-${tipo}`);
+      const card  = document.getElementById(`card-${tipo}`);
+      if (!zone) return;
+
+      // Prevent clicking
+      zone.onclick = (e) => { e.stopPropagation(); showDocErr(tipo, 'Documento ya enviado — no se puede reemplazar.'); };
+      const inp = document.getElementById(`file-${tipo}`);
+      if (inp) inp.disabled = true;
+
+      zone.classList.add('has-file');
+      if (card) card.classList.add('has-file');
+      if (badge) {
+        badge.innerHTML = '🔒 Enviado';
+        badge.classList.add('uploaded');
+      }
+
+      if (zone.querySelector('.upload-icon')) zone.querySelector('.upload-icon').style.display = 'none';
+      if (zone.querySelector('.upload-label')) zone.querySelector('.upload-label').style.display = 'none';
+      const sub = zone.querySelector('.upload-sub');
+      if (sub) sub.style.display = 'none';
+
+      const uploadDate = docRecord.uploaded_at || docRecord.created_at
+        ? new Date(docRecord.uploaded_at || docRecord.created_at).toLocaleDateString('es-MX',{day:'2-digit',month:'short',year:'numeric'})
+        : '';
+      if (prev) {
+        prev.innerHTML = `<div class="file-preview-item" style="pointer-events:none;">
+          <span class="file-emoji">🔒</span>
+          <span class="file-name" style="margin-left:12px;">${escapeHtml(docRecord.file_name || 'Documento')}</span>
+          <span class="file-size">${uploadDate ? 'Subido el ' + uploadDate : ''}</span>
+        </div>`;
+        prev.style.display = 'block';
+      }
+    }
+
+    function updateStep3Button() {
+      const uploaded = REQUIRED_DOCS.filter(t => !!files[t]).length;
+      const total = REQUIRED_DOCS.length;
+      const btn = document.getElementById('btn-step-3');
+      const label = document.getElementById('docs-count-label');
+      const fill  = document.getElementById('docs-mini-fill');
+      if (label) label.textContent = `${uploaded} de ${total} documentos subidos`;
+      if (fill)  fill.style.width = `${(uploaded/total)*100}%`;
+      if (btn) btn.disabled = uploaded < total;
+      if (btn) btn.classList.toggle('ready', uploaded >= total);
+    }
+
+    function validateAndNextStep3() {
+      let allOk = true;
+      REQUIRED_DOCS.forEach(tipo => {
+        if (!files[tipo]) { showDocErr(tipo, 'Este documento es obligatorio.'); allOk = false; }
+      });
+      if (allOk) goToStep(4);
+    }
+
+    // ── Step 4: Finish ─────────────────────────────────────
+    async function finishOnboarding() {
+      const btn = document.getElementById('btn-finish');
+      btn.disabled = true;
+      btn.querySelector('.btn-text').style.display = 'none';
+      btn.querySelector('.btn-loader').style.display = 'flex';
+
+      try {
+        if (currentUser) {
+          // Upload required docs (skip already locked ones)
+          for (const tipo of REQUIRED_DOCS) {
+            if (files[tipo] && files[tipo] !== '__locked__' && !lockedDocs[tipo]) {
+              await uploadDocument(currentUser.id, tipo, files[tipo], true);
+            }
+          }
+          // Upload optional docs (skip already locked ones)
+          for (const tipo of OPTIONAL_DOCS) {
+            if (files[tipo] && files[tipo] !== '__locked__' && !lockedDocs[tipo]) {
+              await uploadDocument(currentUser.id, tipo, files[tipo], false);
+            }
+          }
+          await markOnboardingComplete(currentUser.id);
+        }
+        window.location.href = 'perfil.html';
+      } catch (err) {
+        console.error('Error finalizando onboarding:', err);
+        alert('Ocurrió un error al guardar tus documentos. Intenta de nuevo.');
+        btn.disabled = false;
+        btn.querySelector('.btn-text').style.display = '';
+        btn.querySelector('.btn-loader').style.display = 'none';
+      }
+    }
+
+    // ── Helpers ────────────────────────────────────────────
+    function showErr(field, msg) {
+      const el = document.getElementById(`err-${field}`);
+      if (el) { el.textContent = msg; el.style.display = 'block'; }
+    }
+
+    function clearErrors(fields) {
+      fields.forEach(f => {
+        const el = document.getElementById(`err-${f}`);
+        if (el) el.style.display = 'none';
+      });
+    }
+
+    function showDocErr(tipo, msg) {
+      const el = document.getElementById(`error-${tipo}`);
+      if (el) { el.textContent = msg; el.style.display = 'block'; }
+    }
+
+    function escapeHtml(str) {
+      const d = document.createElement('div');
+      d.appendChild(document.createTextNode(str));
+      return d.innerHTML;
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Huayacán · Control de Horarios</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+
+  <!-- ───── HEADER ───── -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="header-brand">
+        <div class="brand-badge">H</div>
+        <div>
+          <h1 class="header-title">Huayacán</h1>
+          <span class="header-subtitle">Control de Horarios</span>
+        </div>
+      </div>
+      <div class="header-meta">
+        <div class="date-chip">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" />
+            <line x1="16" y1="2" x2="16" y2="6" />
+            <line x1="8" y1="2" x2="8" y2="6" />
+            <line x1="3" y1="10" x2="21" y2="10" />
+          </svg>
+          <span id="current-date"></span>
+        </div>
+        <div class="status-chip">
+          <span class="pulse"></span>
+          <span>Local · Guardado</span>
+        </div>
+        <button class="btn-secondary" id="btn-users" title="Gestionar usuarios"
+          style="padding:0.35rem 0.75rem;font-size:0.78rem;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
+          Usuarios
+        </button>
+      </div>
+    </div>
+    <div class="week-nav">
+      <button class="week-btn" id="prev-week">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="15 18 9 12 15 6" />
+        </svg>
+      </button>
+      <span class="week-label" id="week-label"></span>
+      <button class="week-btn" id="next-week">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="9 18 15 12 9 6" />
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ───── STATS BAR ───── -->
+  <div class="stats-bar">
+    <div class="stat-card">
+      <span class="stat-value" id="stat-areas">5</span>
+      <span class="stat-label">Áreas</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-value" id="stat-staff">0</span>
+      <span class="stat-label">Empleados</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-value" id="stat-shifts">0</span>
+      <span class="stat-label">Turnos esta semana</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-value accent" id="stat-pending">0</span>
+      <span class="stat-label">Sin asignar</span>
+    </div>
+  </div>
+
+  <!-- ───── DEPARTMENT TABS ───── -->
+  <div class="dept-tabs-wrapper">
+    <nav class="dept-tabs" id="dept-tabs"></nav>
+    <button class="btn-add-dept" id="btn-add-dept" title="Nueva área">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <line x1="12" y1="5" x2="12" y2="19" />
+        <line x1="5" y1="12" x2="19" y2="12" />
+      </svg>
+      Nueva área
+    </button>
+  </div>
+
+  <!-- ───── MAIN ───── -->
+  <main class="main-content">
+    <div class="table-container">
+      <div class="table-header">
+        <div class="table-header-left">
+          <div class="dept-icon" id="panel-dept-icon"></div>
+          <h2 class="section-title" id="panel-dept-name">Área</h2>
+          <span class="dept-count-badge" id="panel-dept-count"></span>
+        </div>
+        <div class="table-actions">
+          <button class="btn-secondary" id="btn-manage" style="display:none;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <line x1="23" y1="11" x2="17" y2="11" />
+              <line x1="20" y1="8" x2="20" y2="14" />
+            </svg>
+            Personal
+          </button>
+          <button class="btn-secondary" id="btn-export">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+              <line x1="12" y1="18" x2="12" y2="12" />
+              <line x1="9" y1="15" x2="15" y2="15" />
+            </svg>
+            Exportar hoja
+          </button>
+        </div>
+      </div>
+
+      <!-- Empty state -->
+      <div class="empty-state hidden" id="empty-state">
+        <div class="empty-icon">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <line x1="23" y1="11" x2="17" y2="11" />
+            <line x1="20" y1="8" x2="20" y2="14" />
+          </svg>
+        </div>
+        <h3 class="empty-title">Sin empleados en esta área</h3>
+        <p class="empty-subtitle">Agrega empleados desde "Personal" para asignar horarios.</p>
+        <button class="btn-primary" onclick="document.getElementById('btn-manage').click()">+ Agregar empleado</button>
+      </div>
+
+      <div class="schedule-grid-wrapper" id="schedule-grid-wrapper">
+        <table class="schedule-table" id="schedule-table">
+          <thead>
+            <tr>
+              <th class="col-employee">Empleado</th>
+              <th class="col-day" data-day="0">Lun</th>
+              <th class="col-day" data-day="1">Mar</th>
+              <th class="col-day" data-day="2">Mié</th>
+              <th class="col-day" data-day="3">Jue</th>
+              <th class="col-day" data-day="4">Vie</th>
+              <th class="col-day" data-day="5">Sáb</th>
+              <th class="col-day" data-day="6">Dom</th>
+              <th class="col-hours">Hrs/Sem</th>
+            </tr>
+          </thead>
+          <tbody id="schedule-body"></tbody>
+        </table>
+      </div>
+
+      <div class="legend">
+        <div class="legend-item"><span class="legend-dot available"></span> Turno activo</div>
+        <div class="legend-item"><span class="legend-dot off"></span> Descanso</div>
+        <div class="legend-item"><span class="legend-dot modified"></span> Sin comida asignada</div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ───── MANAGE PANEL ───── -->
+  <div class="modal-overlay" id="manage-overlay">
+    <div class="modal manage-modal">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title">Gestionar Personal</h3>
+          <p class="modal-subtitle" id="manage-modal-subtitle"></p>
+        </div>
+        <button class="modal-close" id="manage-close">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="add-employee-form">
+          <div class="add-form-row">
+            <div class="field-group" style="flex:1">
+              <label class="field-label">Nombre completo</label>
+              <input type="text" id="new-emp-name" class="text-input" placeholder="Ej. Diana Alcocer" />
+            </div>
+            <div class="field-group" style="width:130px">
+              <label class="field-label">Puesto</label>
+              <input type="text" id="new-emp-role" class="text-input" placeholder="Ej. Recepcionista" />
+            </div>
+            <button class="btn-primary add-btn" id="btn-add-employee">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+              Agregar
+            </button>
+          </div>
+        </div>
+        <div class="emp-list-header">
+          <span class="field-label">Empleados en esta área</span>
+          <span class="emp-list-count" id="emp-list-count">0 empleados</span>
+        </div>
+        <div class="emp-list" id="emp-list"></div>
+        <div class="emp-list-empty hidden" id="emp-list-empty">
+          <p style="color:var(--text-muted);font-size:0.85rem;text-align:center;padding:1.5rem 0;">Aún no hay empleados
+            en esta área.</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-ghost" id="btn-close-manage">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ───── EDIT SHIFT MODAL ───── -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal" id="edit-modal">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title" id="modal-employee-name">Editar Turno</h3>
+          <p class="modal-subtitle" id="modal-day-label"></p>
+        </div>
+        <button class="modal-close" id="modal-close">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!-- Active toggle -->
+        <div class="toggle-row">
+          <label class="toggle-label">Día de trabajo</label>
+          <label class="toggle-switch">
+            <input type="checkbox" id="modal-active" checked />
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <!-- Entrada / Salida -->
+        <div class="time-fields" id="time-fields">
+          <div class="field-group">
+            <label class="field-label">Entrada</label>
+            <div class="time-input-wrapper">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+              <input type="time" id="modal-start" class="time-input" />
+            </div>
+          </div>
+          <div class="field-divider">→</div>
+          <div class="field-group">
+            <label class="field-label">Salida</label>
+            <div class="time-input-wrapper">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+              <input type="time" id="modal-end" class="time-input" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Comida -->
+        <div class="time-fields" id="comida-fields">
+          <div class="field-group">
+            <label class="field-label">🍽️ Comida · inicio</label>
+            <div class="time-input-wrapper">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+              <input type="time" id="modal-comida-start" class="time-input" />
+            </div>
+          </div>
+          <div class="field-divider">→</div>
+          <div class="field-group">
+            <label class="field-label">🍽️ Comida · fin</label>
+            <div class="time-input-wrapper">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+              <input type="time" id="modal-comida-end" class="time-input" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Duration -->
+        <div class="duration-display" id="duration-display">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10" />
+            <polyline points="12 6 12 12 16 14" />
+          </svg>
+          <span id="duration-text">— hrs de turno</span>
+        </div>
+
+        <!-- Notas -->
+        <div class="field-group">
+          <label class="field-label">Notas</label>
+          <textarea id="modal-notes" class="notes-input" placeholder="Observaciones opcionales..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-ghost" id="btn-cancel-modal">Cancelar</button>
+        <button class="btn-primary" id="btn-save-modal">
+          <span class="btn-text">Guardar</span>
+          <span class="btn-loader hidden"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ───── CONFIRM DELETE ───── -->
+  <div class="modal-overlay" id="confirm-overlay">
+    <div class="modal confirm-modal">
+      <div class="modal-header">
+        <h3 class="modal-title" style="color:var(--accent-red)">Eliminar empleado</h3>
+        <button class="modal-close" id="confirm-close">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:0.9rem;color:var(--text-secondary);line-height:1.6;">
+          ¿Eliminar a <strong id="confirm-emp-name" style="color:var(--text-primary)"></strong>?<br>
+          <span style="color:var(--text-muted);font-size:0.8rem;">Se borrarán todos sus horarios asignados.</span>
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-ghost" id="btn-cancel-confirm">Cancelar</button>
+        <button class="btn-danger" id="btn-confirm-delete">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3 6 5 6 21 6" />
+            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+          </svg>
+          Eliminar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ───── DEPT MANAGE MODAL ───── -->
+  <div class="modal-overlay" id="dept-overlay">
+    <div class="modal manage-modal">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title">Gestionar Áreas</h3>
+          <p class="modal-subtitle">Crea o elimina departamentos</p>
+        </div>
+        <button class="modal-close" id="dept-modal-close">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="add-employee-form">
+          <div class="add-form-row">
+            <div class="field-group" style="flex:1">
+              <label class="field-label">Nombre del área</label>
+              <input type="text" id="new-dept-name" class="text-input" placeholder="Ej. Cocina, Spa, Eventos" />
+            </div>
+            <div class="field-group" style="width:110px">
+              <label class="field-label">Icono</label>
+              <select id="dept-icon-select" class="text-input" style="font-size:1.1rem;text-align:center;">
+                <option>🏢</option>
+                <option>🛏️</option>
+                <option>🛡️</option>
+                <option>🔧</option>
+                <option>📢</option>
+                <option>📋</option>
+                <option>🍽️</option>
+                <option>🚗</option>
+                <option>💼</option>
+                <option>🎯</option>
+                <option>🏋️</option>
+                <option>🎨</option>
+                <option>🧙</option>
+                <option>💻</option>
+                <option>✨</option>
+              </select>
+            </div>
+            <button class="btn-primary add-btn" id="btn-create-dept">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+              Crear
+            </button>
+          </div>
+        </div>
+        <div class="emp-list-header">
+          <span class="field-label">Áreas existentes</span>
+        </div>
+        <div class="emp-list" id="dept-manage-list"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-ghost" id="btn-close-dept">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ───── CONFIRM DELETE DEPT ───── -->
+  <div class="modal-overlay" id="confirm-dept-overlay">
+    <div class="modal confirm-modal">
+      <div class="modal-header">
+        <h3 class="modal-title" style="color:var(--accent-red)">Eliminar área</h3>
+        <button class="modal-close" id="confirm-dept-close">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:0.9rem;color:var(--text-secondary);line-height:1.6;">
+          ¿Eliminar el área <strong id="confirm-dept-name" style="color:var(--text-primary)"></strong>?<br>
+          <span id="confirm-dept-emps" style="color:var(--text-muted);font-size:0.8rem;"></span>
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-ghost" id="btn-cancel-confirm-dept">Cancelar</button>
+        <button class="btn-danger" id="btn-confirm-delete-dept">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3 6 5 6 21 6" />
+            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+          </svg>
+          Eliminar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ───── USERS MODAL ───── -->
+  <div class="modal-overlay" id="users-overlay">
+    <div class="modal manage-modal">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title">Gestionar Usuarios</h3>
+          <p class="modal-subtitle">Crea usuarios y contraseñas de acceso</p>
+        </div>
+        <button class="modal-close" id="users-modal-close">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="add-employee-form">
+          <div class="add-form-row" style="flex-wrap:wrap;gap:0.6rem;">
+            <div class="field-group" style="flex:1;min-width:130px;">
+              <label class="field-label">Usuario</label>
+              <input type="text" id="new-user-name" class="text-input" placeholder="Ej. admin" autocomplete="off" />
+            </div>
+            <div class="field-group" style="flex:1;min-width:130px;">
+              <label class="field-label">Contraseña</label>
+              <div style="position:relative;display:flex;">
+                <input type="password" id="new-user-pass" class="text-input" placeholder="Mínimo 4 caracteres"
+                  autocomplete="new-password" style="flex:1;padding-right:2.2rem;" />
+                <button type="button" id="toggle-pass-vis"
+                  style="position:absolute;right:0.5rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-muted);padding:0;"
+                  title="Mostrar/ocultar">
+                  <svg id="eye-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <button class="btn-primary add-btn" id="btn-add-user" style="align-self:flex-end;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+              Crear
+            </button>
+          </div>
+        </div>
+        <div class="emp-list-header" style="margin-top:0.5rem;">
+          <span class="field-label">Usuarios existentes</span>
+          <span class="emp-list-count" id="users-list-count">0 usuarios</span>
+        </div>
+        <div class="emp-list" id="users-list"></div>
+        <div class="emp-list-empty hidden" id="users-list-empty">
+          <p style="color:var(--text-muted);font-size:0.85rem;text-align:center;padding:1.5rem 0;">Aún no hay usuarios
+            registrados.</p>
+        </div>
+        <div
+          style="margin-top:0.75rem;padding:0.65rem 0.85rem;background:var(--bg-elevated);border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,0.06);">
+          <p style="font-size:0.72rem;color:var(--text-muted);line-height:1.6;">
+            <strong style="color:var(--gold);">ℹ️ Nota SQL:</strong> Antes de crear usuarios, asegúrate de tener la
+            tabla en tu base de datos:<br />
+            <code
+              style="font-size:0.68rem;color:var(--text-secondary);">CREATE TABLE IF NOT EXISTS users (id INT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(80) UNIQUE NOT NULL, password_hash VARCHAR(255) NOT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);</code>
+          </p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-ghost" id="btn-close-users">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ───── TOAST ───── -->
+  <div class="toast" id="toast">
+    <div class="toast-icon" id="toast-icon">✓</div>
+    <span id="toast-message">Operación exitosa</span>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="supabase-sync.js"></script>
+  <script src="app.js"></script>
+</body>
+
+</html>

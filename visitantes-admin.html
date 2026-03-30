@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="robots" content="noindex, nofollow"/>
+  <title>Registros de Visitantes | Hotel Huayacán</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    .va-layout { max-width:1300px; margin:0 auto; padding:32px 36px 80px; }
+    @media(max-width:768px){ .va-layout{ padding:16px 16px 60px; } }
+
+    .vis-table-wrap { background:var(--bg-card); border:1px solid var(--border-light); border-radius:var(--radius-lg); overflow:hidden; }
+    .vis-table { width:100%; border-collapse:collapse; min-width:800px; }
+    .vis-table thead tr { background:rgba(255,255,255,0.03); }
+    .vis-table th { padding:12px 16px; text-align:left; font-size:0.72rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; white-space:nowrap; border-bottom:1px solid var(--border-light); }
+    .vis-table td { padding:13px 16px; border-bottom:1px solid rgba(255,255,255,0.04); font-size:0.86rem; vertical-align:middle; }
+    .vis-table tr:last-child td { border-bottom:none; }
+    .vis-table tr:hover td { background:rgba(255,255,255,0.02); }
+
+    .sig-display img { width:120px; height:44px; object-fit:contain; border:1px solid var(--border); border-radius:6px; background:#fff; }
+    .no-sig { font-size:0.75rem; color:var(--border); font-style:italic; }
+
+    .va-toolbar { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:16px; }
+    .va-toolbar .search-wrap { flex:1; min-width:180px; }
+    .date-inp { padding:8px 12px; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); color:var(--text-main); font-family:inherit; font-size:0.86rem; outline:none; transition:all var(--transition); }
+    .date-inp:focus { border-color:var(--accent-green); }
+
+    @media print {
+      .navbar, header, .va-toolbar, button { display:none!important; }
+      body { background:#fff; color:#000; }
+      .vis-table-wrap { border:1px solid #ccc; border-radius:0; }
+      .vis-table td,.vis-table th { color:#000; border-color:#ccc; }
+    }
+  </style>
+</head>
+<body>
+  <header class="navbar">
+    <div class="logo">
+      <div class="logo-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+      <span class="logo-text">Huayacán</span>
+    </div>
+    <div class="nav-right">
+      <a href="admin.html" class="btn-ghost btn-sm">← Admin</a>
+      <a href="seguridad.html" class="btn-ghost btn-sm">← Seguridad</a>
+      <span class="admin-badge">📋 Visitantes</span>
+    </div>
+  </header>
+
+  <div class="va-layout">
+    <div style="display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:24px; flex-wrap:wrap; gap:12px;">
+      <div>
+        <h1 style="font-size:1.8rem; font-weight:700; margin-bottom:4px;">Registros de Visitantes</h1>
+        <p style="color:var(--text-muted); font-size:0.88rem;">Vista para RH y Seguridad — Con firma digital.</p>
+      </div>
+      <div style="display:flex; gap:10px;">
+        <button class="btn-ghost btn-sm" onclick="window.print()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          Imprimir
+        </button>
+        <button class="btn-ghost btn-sm" onclick="loadVisitors()">↻</button>
+      </div>
+    </div>
+
+    <div class="va-toolbar">
+      <div class="search-wrap">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="va-search" placeholder="Buscar nombre, empresa…" oninput="filterVisitors()"/>
+      </div>
+      <input type="date" id="va-date" class="date-inp" onchange="loadVisitors()"/>
+    </div>
+
+    <div class="vis-table-wrap">
+      <div id="va-loading" class="loading-center"><svg class="spinner spinner-lg" viewBox="0 0 50 50"><circle cx="25" cy="25" r="20" fill="none" stroke-width="4"></circle></svg></div>
+      <div id="va-table-wrap" style="display:none; overflow-x:auto;">
+        <table class="vis-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Nombre</th>
+              <th>Empresa</th>
+              <th>Visita a</th>
+              <th>Entrada</th>
+              <th>Salida</th>
+              <th>Firma</th>
+            </tr>
+          </thead>
+          <tbody id="va-tbody"></tbody>
+        </table>
+        <p id="va-empty" style="display:none; text-align:center; color:var(--text-muted); padding:40px;">Sin visitantes para esta fecha.</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="supabase.js"></script>
+  <script>
+    let allVisitors = [];
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('va-date').value = today;
+
+    async function loadVisitors() {
+      document.getElementById('va-loading').style.display    = 'flex';
+      document.getElementById('va-table-wrap').style.display = 'none';
+      try {
+        const d = document.getElementById('va-date').value || today;
+        allVisitors = await getVisitorSignatures(d);
+        filterVisitors();
+      } catch(err) {
+        document.getElementById('va-loading').innerHTML=`<p style="color:#ef4444">Error: ${err.message}</p>`;
+        return;
+      }
+      document.getElementById('va-loading').style.display    = 'none';
+      document.getElementById('va-table-wrap').style.display = 'block';
+    }
+
+    function filterVisitors() {
+      const q = (document.getElementById('va-search').value||'').toLowerCase();
+      const filtered = allVisitors.filter(r =>
+        (r.nombre+' '+(r.empresa||'')).toLowerCase().includes(q)
+      );
+      const tbody = document.getElementById('va-tbody');
+      const empty = document.getElementById('va-empty');
+      tbody.innerHTML='';
+      if (!filtered.length){ empty.style.display='block'; return; }
+      empty.style.display='none';
+
+      filtered.forEach((r,i) => {
+        const tr=document.createElement('tr');
+        const sigHtml=r.firma_base64
+          ? `<img src="${r.firma_base64}" alt="Firma" style="width:120px;height:44px;object-fit:contain;border:1px solid var(--border);border-radius:6px;background:#fff;"/>`
+          : `<span class="no-sig">Sin firma</span>`;
+        tr.innerHTML=`
+          <td style="color:var(--text-muted);font-size:0.8rem;">${i+1}</td>
+          <td><strong>${esc(r.nombre)}</strong></td>
+          <td style="color:var(--text-muted);">${esc(r.empresa||'–')}</td>
+          <td style="color:var(--text-muted);">${esc(r.persona_a_visitar||'–')}</td>
+          <td style="font-weight:600;">${r.hora_entrada||'–'}</td>
+          <td style="font-weight:600;">${r.hora_salida||'–'}</td>
+          <td>${sigHtml}</td>`;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function esc(s){const d=document.createElement('div');d.appendChild(document.createTextNode(s||''));return d.innerHTML;}
+
+    loadVisitors();
+  </script>
+</body>
+</html>

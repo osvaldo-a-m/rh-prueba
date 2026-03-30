@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Registro de Visitantes | Hotel Huayacán</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Inter:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ── Kiosk layout ─────────────────────────────────────── */
+    body {
+      background: var(--bg-main);
+    }
+
+    .kiosk-wrap {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 40px 20px 80px;
+    }
+
+    .kiosk-header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .kiosk-header .hotel-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      font-weight: 600;
+      background: linear-gradient(135deg, var(--accent-green), var(--vibrant-2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .kiosk-header p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-top: 4px;
+    }
+
+    .kiosk-card {
+      width: 100%;
+      max-width: 560px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      padding: 36px 40px;
+    }
+
+    @media(max-width:600px) {
+      .kiosk-card {
+        padding: 24px 20px;
+      }
+    }
+
+    .kiosk-step-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .kiosk-step-sub {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+
+    /* Signature container */
+    .sig-container {
+      margin-top: 20px;
+    }
+
+    .sig-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .sig-box {
+      position: relative;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: var(--bg-input);
+      overflow: hidden;
+      touch-action: none;
+      transition: all var(--transition);
+    }
+
+    .sig-box canvas {
+      display: block;
+      width: 100%;
+      height: 180px;
+    }
+
+    .sig-box .sig-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(4px);
+      transition: opacity 0.3s;
+    }
+
+    .sig-box.unlocked {
+      border-color: var(--accent-green);
+      cursor: crosshair;
+    }
+
+    .sig-box.unlocked .sig-overlay {
+      display: none;
+    }
+
+    .sig-box.has-sig .sig-overlay {
+      display: none;
+    }
+
+    .lock-icon {
+      font-size: 2rem;
+      opacity: 0.7;
+    }
+
+    .lock-msg {
+      font-size: 0.82rem;
+      color: rgba(255, 255, 255, 0.7);
+      text-align: center;
+      padding: 0 16px;
+      line-height: 1.5;
+    }
+
+    .countdown-chip {
+      background: rgba(245, 158, 11, 0.2);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      border-radius: 50px;
+      padding: 6px 16px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #f59e0b;
+    }
+
+    .sig-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      margin-top: 8px;
+    }
+
+    .btn-clear-sig {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 5px 12px;
+      border-radius: var(--radius);
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+
+    .btn-clear-sig:hover {
+      border-color: var(--text-muted);
+      color: var(--text-main);
+    }
+
+    /* Success state */
+    .success-card {
+      text-align: center;
+      padding: 48px 32px;
+      display: none;
+    }
+
+    .success-icon {
+      font-size: 4rem;
+      margin-bottom: 16px;
+    }
+
+    .success-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .success-sub {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    /* Time display */
+    .current-time-display {
+      text-align: center;
+      font-size: 2.2rem;
+      font-weight: 300;
+      color: var(--text-muted);
+      font-variant-numeric: tabular-nums;
+      margin-bottom: 4px;
+    }
+
+    .current-date-display {
+      text-align: center;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+    }
+
+    /* Admin link (hidden corner) */
+    .admin-link {
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      font-size: 0.7rem;
+      color: var(--border);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .admin-link:hover {
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="navbar">
+    <div class="logo">
+      <div class="logo-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="1.8">
+          <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+          <polyline points="9 22 9 12 15 12 15 22" />
+        </svg></div>
+      <span class="logo-text">Huayacán</span>
+    </div>
+    <div class="nav-right">
+      <span style="font-size:0.82rem; color:var(--text-muted);">Registro de Visitantes</span>
+    </div>
+  </header>
+
+  <div class="kiosk-wrap">
+    <div class="kiosk-header">
+      <div class="hotel-name">Hotel Huayacán</div>
+      <p>Por favor completa tu información de visita.</p>
+    </div>
+
+    <!-- Clock -->
+    <div class="current-time-display" id="clock-display">--:--</div>
+    <div class="current-date-display" id="date-display"></div>
+
+    <!-- Form card -->
+    <div class="kiosk-card" id="form-card">
+      <p class="kiosk-step-title">✍️ Registro de Visita</p>
+      <p class="kiosk-step-sub">Completa los campos y firma al momento de salir.</p>
+
+      <div class="form-group">
+        <label for="v-nombre">Nombre completo <span class="req">*</span></label>
+        <input type="text" id="v-nombre" placeholder="Tu nombre completo" autocomplete="name" style="font-size:1rem;" />
+      </div>
+      <div class="form-group">
+        <label for="v-empresa">Empresa u organización</label>
+        <input type="text" id="v-empresa" placeholder="Opcional" />
+      </div>
+      <div class="form-group">
+        <label for="v-persona">¿A quién visitas?</label>
+        <input type="text" id="v-persona" placeholder="Nombre del empleado o área" />
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+        <div class="form-group">
+          <label for="v-entrada">Hora de entrada <span class="req">*</span></label>
+          <input type="time" id="v-entrada" />
+        </div>
+        <div class="form-group">
+          <label for="v-salida">Hora de salida <span
+              style="color:var(--text-muted);font-weight:400;">(estimada)</span></label>
+          <input type="time" id="v-salida" oninput="updateSigLock()" />
+        </div>
+      </div>
+
+      <!-- Signature section -->
+      <div class="sig-container">
+        <span class="sig-label">✍️ Firma <span
+            style="font-weight:400;text-transform:none;font-size:0.72rem;color:var(--text-muted);">(disponible al
+            momento de salir)</span></span>
+
+        <div class="sig-box" id="sig-box">
+          <canvas id="sig-canvas" width="1000" height="280"></canvas>
+          <div class="sig-overlay" id="sig-overlay">
+            <span class="lock-icon">🔒</span>
+            <span class="lock-msg" id="sig-lock-msg">La firma se habilitará 20 min antes de tu hora de salida.</span>
+            <span class="countdown-chip" id="sig-countdown" style="display:none;">–</span>
+          </div>
+        </div>
+
+        <div class="sig-actions">
+          <button class="btn-clear-sig" onclick="clearSig()" id="btn-clear-sig" style="display:none;">
+            Borrar firma
+          </button>
+        </div>
+      </div>
+
+      <p id="form-error" style="color:#f87171;font-size:0.82rem;margin-bottom:12px;display:none;"></p>
+
+      <button class="btn-primary btn-full" id="btn-save" onclick="saveRecord()" disabled>
+        <span class="btn-text">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+          Guardar registro y salir
+        </span>
+        <span class="btn-loader" style="display:none;"><svg class="spinner" viewBox="0 0 50 50">
+            <circle cx="25" cy="25" r="20" fill="none" stroke-width="4"></circle>
+          </svg></span>
+      </button>
+      <p style="font-size:0.72rem; color:var(--text-muted); text-align:center; margin-top:10px;">El botón se activará
+        cuando tu firma esté completa.</p>
+    </div>
+
+    <!-- Success card -->
+    <div class="kiosk-card success-card" id="success-card">
+      <div class="success-icon">✅</div>
+      <h2 class="success-title">¡Registro exitoso!</h2>
+      <p class="success-sub">Gracias por tu visita. Que tengas un excelente día.</p>
+      <button class="btn-primary" style="margin-top:28px;" onclick="resetForm()">Nuevo registro</button>
+    </div>
+  </div>
+
+  <!-- Admin link (barely visible) -->
+  <a href="visitantes-admin.html" class="admin-link" title="Ver registros (solo personal)">· · ·</a>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="supabase.js"></script>
+  <script>
+    // ── Clock ─────────────────────────────────────────────────
+    function updateClock() {
+      const now = new Date();
+      document.getElementById('clock-display').textContent =
+        now.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit', hour12: false });
+      document.getElementById('date-display').textContent =
+        now.toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    }
+    updateClock();
+    setInterval(() => { updateClock(); updateSigLock(); checkSaveBtn(); }, 10000);
+
+    // Set entry time to now
+    const nowTime = () => {
+      const n = new Date();
+      return `${String(n.getHours()).padStart(2, '0')}:${String(n.getMinutes()).padStart(2, '0')}`;
+    };
+    document.getElementById('v-entrada').value = nowTime();
+
+    // ── Signature Canvas ──────────────────────────────────────
+    const canvas = document.getElementById('sig-canvas');
+    const ctx = canvas.getContext('2d');
+    const sigBox = document.getElementById('sig-box');
+    let drawing = false;
+    let hasSig = false;
+    let sigUnlocked = false;
+
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 2.5;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
+    function getPos(e) {
+      const rect = canvas.getBoundingClientRect();
+      const sx = canvas.width / rect.width;
+      const sy = canvas.height / rect.height;
+      const src = e.touches ? e.touches[0] : e;
+      return { x: (src.clientX - rect.left) * sx, y: (src.clientY - rect.top) * sy };
+    }
+
+    function startDraw(e) {
+      if (!sigUnlocked) return;
+      e.preventDefault(); drawing = true;
+      ctx.beginPath(); const { x, y } = getPos(e); ctx.moveTo(x, y);
+    }
+    function draw(e) {
+      if (!drawing || !sigUnlocked) return;
+      e.preventDefault();
+      const { x, y } = getPos(e); ctx.lineTo(x, y); ctx.stroke();
+      if (!hasSig) { hasSig = true; sigBox.classList.add('has-sig'); document.getElementById('btn-clear-sig').style.display = 'block'; checkSaveBtn(); }
+    }
+    function stopDraw() { drawing = false; }
+
+    canvas.addEventListener('mousedown', startDraw);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', stopDraw);
+    canvas.addEventListener('mouseleave', stopDraw);
+    canvas.addEventListener('touchstart', startDraw, { passive: false });
+    canvas.addEventListener('touchmove', draw, { passive: false });
+    canvas.addEventListener('touchend', stopDraw);
+    canvas.addEventListener('pointerdown', startDraw);
+    canvas.addEventListener('pointermove', e => { if (e.buttons) draw(e); });
+    canvas.addEventListener('pointerup', stopDraw);
+
+    function clearSig() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      hasSig = false;
+      sigBox.classList.remove('has-sig');
+      document.getElementById('btn-clear-sig').style.display = 'none';
+      checkSaveBtn();
+    }
+
+    function getSigDataUrl() {
+      if (!hasSig) return null;
+      const tmp = document.createElement('canvas');
+      tmp.width = canvas.width; tmp.height = canvas.height;
+      const tc = tmp.getContext('2d');
+      tc.fillStyle = '#ffffff'; tc.fillRect(0, 0, tmp.width, tmp.height);
+      tc.drawImage(canvas, 0, 0);
+      const d = tc.getImageData(0, 0, tmp.width, tmp.height).data;
+      const imgData = tc.getImageData(0, 0, tmp.width, tmp.height);
+      for (let i = 0; i < d.length; i += 4) {
+        const b = (d[i] + d[i + 1] + d[i + 2]) / 3;
+        if (b > 200) { imgData.data[i] = 255; imgData.data[i + 1] = 255; imgData.data[i + 2] = 255; }
+        else { imgData.data[i] = 0; imgData.data[i + 1] = 0; imgData.data[i + 2] = 0; imgData.data[i + 3] = 255; }
+      }
+      tc.putImageData(imgData, 0, 0);
+      return tmp.toDataURL('image/png');
+    }
+
+    // ── Signature lock logic ──────────────────────────────────
+    /**
+     * Firma se desbloquea cuando:
+     * - Hay hora de salida: 20 min antes de esa hora
+     * - No hay hora de salida: siempre disponible (visitante firma al irse,
+     *   la hora actual se guarda como hora de salida)
+     */
+    function updateSigLock() {
+      const salidaVal = document.getElementById('v-salida').value; // "HH:MM" or ""
+      const overlay = document.getElementById('sig-overlay');
+      const lockMsg = document.getElementById('sig-lock-msg');
+      const countdown = document.getElementById('sig-countdown');
+
+      if (!salidaVal) {
+        // Sin hora de salida → firma siempre disponible
+        unlockSig();
+        lockMsg.textContent = 'Firma aquí al momento de salir.';
+        countdown.style.display = 'none';
+        return;
+      }
+
+      // Parse exit time as today
+      const now = new Date();
+      const [sh, sm] = salidaVal.split(':').map(Number);
+      const exitTime = new Date(now);
+      exitTime.setHours(sh, sm, 0, 0);
+
+      const diffMs = exitTime - now;
+      const diffMin = Math.floor(diffMs / 60000);
+
+      if (diffMin <= 20) {
+        // ≤ 20 min before exit → unlock
+        unlockSig();
+        countdown.style.display = 'none';
+      } else {
+        // Still locked
+        lockSig();
+        const hrs = Math.floor(diffMin / 60);
+        const mins = diffMin % 60;
+        const label = hrs > 0 ? `${hrs}h ${mins}min` : `${mins} min`;
+        lockMsg.textContent = `La firma se habilitará 20 min antes de tu hora de salida (${salidaVal}).`;
+        countdown.style.display = 'block';
+        countdown.textContent = `Disponible en ${label}`;
+      }
+    }
+
+    function unlockSig() {
+      sigUnlocked = true;
+      sigBox.classList.add('unlocked');
+      document.getElementById('sig-overlay').style.display = 'none';
+    }
+
+    function lockSig() {
+      if (hasSig) return; // don't lock if already signed
+      sigUnlocked = false;
+      sigBox.classList.remove('unlocked');
+      document.getElementById('sig-overlay').style.display = 'flex';
+    }
+
+    function checkSaveBtn() {
+      const nombre = document.getElementById('v-nombre').value.trim();
+      document.getElementById('btn-save').disabled = !(nombre && hasSig);
+    }
+
+    // Watch nombre input
+    document.getElementById('v-nombre').addEventListener('input', checkSaveBtn);
+
+    // Initial check
+    updateSigLock();
+
+    // ── Save Record ──────────────────────────────────────────
+    async function saveRecord() {
+      const nombre = document.getElementById('v-nombre').value.trim();
+      const errEl = document.getElementById('form-error');
+      errEl.style.display = 'none';
+
+      if (!nombre) { errEl.textContent = 'El nombre es obligatorio.'; errEl.style.display = 'block'; return; }
+      if (!hasSig) { errEl.textContent = 'Debes firmar antes de guardar.'; errEl.style.display = 'block'; return; }
+
+      const btn = document.getElementById('btn-save');
+      btn.disabled = true; btn.querySelector('.btn-text').style.display = 'none'; btn.querySelector('.btn-loader').style.display = 'flex';
+
+      try {
+        const entradaVal = document.getElementById('v-entrada').value || nowTime();
+        // If no exit time provided, use current time as exit
+        const salidaVal = document.getElementById('v-salida').value || nowTime();
+        const sigDataUrl = getSigDataUrl();
+
+        await insertVisitorSignature({
+          fecha: new Date().toISOString().split('T')[0],
+          nombre,
+          empresa: document.getElementById('v-empresa').value.trim() || null,
+          persona_a_visitar: document.getElementById('v-persona').value.trim() || null,
+          hora_entrada: entradaVal,
+          hora_salida: salidaVal,
+          firma_base64: sigDataUrl,
+        });
+
+        // Show success
+        document.getElementById('form-card').style.display = 'none';
+        document.getElementById('success-card').style.display = 'block';
+      } catch (err) {
+        errEl.textContent = 'Error al guardar: ' + err.message;
+        errEl.style.display = 'block';
+        btn.disabled = false; btn.querySelector('.btn-text').style.display = 'flex'; btn.querySelector('.btn-loader').style.display = 'none';
+      }
+    }
+
+    function resetForm() {
+      document.getElementById('v-nombre').value = '';
+      document.getElementById('v-empresa').value = '';
+      document.getElementById('v-persona').value = '';
+      document.getElementById('v-entrada').value = nowTime();
+      document.getElementById('v-salida').value = '';
+      clearSig();
+      document.getElementById('form-error').style.display = 'none';
+      document.getElementById('form-card').style.display = 'block';
+      document.getElementById('success-card').style.display = 'none';
+      updateSigLock();
+      checkSaveBtn();
+    }
+  </script>
+</body>
+
+</html>

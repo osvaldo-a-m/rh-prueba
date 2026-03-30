@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="robots" content="noindex, nofollow"/>
+  <title>Asistencia Activa | Hotel Huayacán</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    .att-layout { max-width:1280px; margin:0 auto; padding:32px 36px 80px; }
+    @media(max-width:768px){ .att-layout{ padding:16px 16px 80px; } }
+
+    /* Live board */
+    .board-grid {
+      display:grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap:14px;
+      margin-top:24px;
+    }
+
+    .emp-live-card {
+      background:var(--bg-card);
+      border:1px solid var(--border-light);
+      border-radius:var(--radius-lg);
+      padding:20px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:10px;
+      text-align:center;
+      transition:all var(--transition);
+      position:relative;
+      overflow:hidden;
+    }
+
+    .emp-live-card.working {
+      border-color:rgba(16,185,129,0.3);
+      background:linear-gradient(135deg, rgba(16,185,129,0.05), var(--bg-card));
+    }
+
+    .emp-live-card.out {
+      opacity:0.45;
+    }
+
+    .emp-live-avatar {
+      width:56px; height:56px; border-radius:50%;
+      background:linear-gradient(135deg, rgba(16,185,129,0.2), rgba(59,130,246,0.2));
+      border:2px solid rgba(16,185,129,0.25);
+      display:flex; align-items:center; justify-content:center;
+      font-size:1.3rem; font-weight:700; color:var(--accent-green);
+      position:relative;
+    }
+
+    .emp-live-avatar .status-ring {
+      position:absolute; inset:-4px; border-radius:50%;
+      border:3px solid transparent;
+    }
+
+    .working .emp-live-avatar .status-ring {
+      border-color:var(--accent-green);
+      animation:spin-ring 3s linear infinite;
+    }
+
+    @keyframes spin-ring {
+      from { transform:rotate(0deg); }
+      to   { transform:rotate(360deg); }
+    }
+
+    .emp-live-name { font-size:0.88rem; font-weight:600; color:var(--text-main); line-height:1.3; }
+    .emp-live-time { font-size:0.78rem; color:var(--text-muted); }
+
+    .chip-working-live {
+      background:rgba(16,185,129,0.12); color:var(--accent-green);
+      padding:4px 12px; border-radius:50px; font-size:0.72rem; font-weight:700;
+      display:flex; align-items:center; gap:5px;
+    }
+    .chip-working-live .dot {
+      width:7px; height:7px; border-radius:50%; background:var(--accent-green);
+      animation: pulse-dot 1.5s infinite;
+    }
+
+    .chip-out-live {
+      background:rgba(148,163,184,0.08); color:var(--text-muted);
+      padding:4px 12px; border-radius:50px; font-size:0.72rem; font-weight:700;
+    }
+
+    @keyframes pulse-dot {
+      0%,100% { opacity:1; transform:scale(1); }
+      50%      { opacity:0.5; transform:scale(0.7); }
+    }
+
+    /* Import panel (admin only) */
+    .import-panel {
+      background:var(--bg-card); border:1px solid var(--border-light);
+      border-radius:var(--radius-lg); padding:24px 28px; margin-bottom:28px;
+    }
+    .import-panel summary {
+      cursor:pointer; font-weight:600; font-size:0.9rem; color:var(--text-main);
+      list-style:none; display:flex; align-items:center; gap:8px;
+      user-select:none;
+    }
+    .import-panel summary::-webkit-details-marker { display:none; }
+    .import-panel[open] summary { margin-bottom:16px; color:var(--accent-green); }
+
+    .drop-zone {
+      border:2px dashed var(--border-focus); border-radius:var(--radius-lg);
+      padding:28px 20px; text-align:center; cursor:pointer; transition:all var(--transition);
+      background:transparent; margin-bottom:12px;
+    }
+    .drop-zone:hover, .drop-zone.drag-over { border-color:var(--accent-green); background:rgba(16,185,129,0.03); }
+    .drop-zone .dz-icon { font-size:2rem; opacity:0.5; margin-bottom:8px; }
+    .drop-zone p { font-size:0.82rem; color:var(--text-muted); margin:0; }
+    #file-alog { display:none; }
+
+    .import-result { font-size:0.85rem; padding:10px 14px; border-radius:var(--radius); margin-bottom:12px; display:none; }
+    .import-result.ok  { background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.2); color:var(--accent-green); }
+    .import-result.err { background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.25); color:#f87171; }
+
+    /* Stats row */
+    .stat-row-live { display:flex; gap:16px; flex-wrap:wrap; margin-bottom:20px; }
+    .stat-live { background:var(--bg-card); border:1px solid var(--border-light); border-radius:var(--radius); padding:14px 20px; flex:1; min-width:120px; }
+    .stat-live .num { font-size:2rem; font-weight:700; }
+    .stat-live .lbl { font-size:0.72rem; color:var(--text-muted); }
+    .stat-live.green .num { color:var(--accent-green); }
+    .stat-live.amber .num { color:#f59e0b; }
+
+    /* Section titles */
+    .section-title-row { display:flex; align-items:center; gap:10px; margin-bottom:14px; font-size:1rem; font-weight:700; }
+    .section-title-row .count-chip { background:rgba(255,255,255,0.06); border-radius:50px; padding:2px 10px; font-size:0.75rem; font-weight:600; color:var(--text-muted); }
+    .section-title-row .working-chip { background:rgba(16,185,129,0.12); color:var(--accent-green); border-radius:50px; padding:2px 10px; font-size:0.75rem; font-weight:700; }
+
+    /* Log detail collapse */
+    .log-section { margin-top:36px; }
+    .log-table-wrap { background:var(--bg-card); border:1px solid var(--border-light); border-radius:var(--radius-lg); overflow:hidden; }
+    .log-table { width:100%; border-collapse:collapse; }
+    .log-table th { padding:10px 16px; text-align:left; font-size:0.72rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.4px; border-bottom:1px solid var(--border-light); background:rgba(255,255,255,0.02); }
+    .log-table td { padding:11px 16px; border-bottom:1px solid rgba(255,255,255,0.04); font-size:0.84rem; }
+    .log-table tr:last-child td { border-bottom:none; }
+    .chip-in  { background:rgba(16,185,129,0.12); color:var(--accent-green); padding:3px 10px; border-radius:50px; font-size:0.72rem; font-weight:700; }
+    .chip-out-sm { background:rgba(148,163,184,0.1); color:var(--text-muted); padding:3px 10px; border-radius:50px; font-size:0.72rem; font-weight:700; }
+
+    /* Filter */
+    .filter-row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:16px; }
+    .filter-row .search-wrap { flex:1; min-width:160px; }
+  </style>
+</head>
+<body>
+  <header class="navbar">
+    <div class="logo">
+      <div class="logo-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+      <span class="logo-text">Huayacán</span>
+    </div>
+    <div class="nav-right">
+      <a href="admin.html" class="btn-ghost btn-sm">← Panel Admin</a>
+      <span class="admin-badge">🕐 Asistencia</span>
+    </div>
+  </header>
+
+  <div class="att-layout">
+    <div style="display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:24px; flex-wrap:wrap; gap:12px;">
+      <div>
+        <h1 style="font-size:1.9rem; font-weight:700; margin-bottom:4px;">Control de Asistencia</h1>
+        <p style="color:var(--text-muted); font-size:0.88rem;" id="today-label">Empleados activos hoy</p>
+      </div>
+      <button class="btn-ghost btn-sm" onclick="loadBoard()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+        Actualizar
+      </button>
+    </div>
+
+    <!-- Import ALOG (collapsible) -->
+    <details class="import-panel">
+      <summary>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Importar archivo del checador (ALOG_001.txt)
+      </summary>
+      <div class="drop-zone" onclick="document.getElementById('file-alog').click()"
+        ondragover="handleDZ(event,true)" ondragleave="handleDZ(event,false)" ondrop="handleDrop(event)">
+        <div class="dz-icon">🖐</div>
+        <p><strong>Clic o arrastra</strong> el archivo ALOG_001.txt</p>
+      </div>
+      <input type="file" id="file-alog" accept=".txt" onchange="handleFileSelect(this)"/>
+      <div class="import-result" id="import-result"></div>
+      <button class="btn-primary" id="btn-import" disabled onclick="doImport()">
+        <span class="btn-text">Importar registros</span>
+        <span class="btn-loader" style="display:none;"><svg class="spinner" viewBox="0 0 50 50"><circle cx="25" cy="25" r="20" fill="none" stroke-width="4"></circle></svg></span>
+      </button>
+    </details>
+
+    <!-- Stats -->
+    <div class="stat-row-live">
+      <div class="stat-live green">
+        <div class="num" id="s-working">–</div>
+        <div class="lbl">Trabajando ahora</div>
+      </div>
+      <div class="stat-live">
+        <div class="num" id="s-total">–</div>
+        <div class="lbl">Registros hoy</div>
+      </div>
+      <div class="stat-live amber">
+        <div class="num" id="s-out">–</div>
+        <div class="lbl">Salieron hoy</div>
+      </div>
+    </div>
+
+    <!-- WORKING NOW board -->
+    <div>
+      <div class="section-title-row">
+        <span>Trabajando ahora</span>
+        <span class="working-chip" id="working-count-chip">0 activos</span>
+      </div>
+      <div id="board-loading" class="loading-center">
+        <svg class="spinner spinner-lg" viewBox="0 0 50 50"><circle cx="25" cy="25" r="20" fill="none" stroke-width="4"></circle></svg>
+      </div>
+      <div class="board-grid" id="working-board"></div>
+      <p id="no-working" style="display:none; text-align:center; color:var(--text-muted); padding:40px 0; font-size:0.9rem;">
+        📭 Sin empleados activos en este momento.
+      </p>
+    </div>
+
+    <!-- DETAIL LOG (collapsible) -->
+    <details class="log-section">
+      <summary style="cursor:pointer; font-weight:700; font-size:0.95rem; color:var(--text-muted); list-style:none; display:flex; align-items:center; gap:8px; margin-bottom:12px; user-select:none;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        Ver registro completo del día
+      </summary>
+
+      <div class="filter-row">
+        <div class="search-wrap">
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="log-search" placeholder="Buscar empleado…" oninput="filterLog()"/>
+        </div>
+        <select id="log-type" onchange="filterLog()" style="padding:8px 12px; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); color:var(--text-main); font-family:inherit; font-size:0.88rem; cursor:pointer; outline:none;">
+          <option value="">Todos</option>
+          <option value="in">Entradas</option>
+          <option value="out">Salidas</option>
+        </select>
+        <input type="date" id="log-date" style="padding:8px 12px; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); color:var(--text-main); font-family:inherit; font-size:0.86rem; outline:none;" onchange="filterLog()"/>
+      </div>
+
+      <div class="log-table-wrap">
+        <table class="log-table">
+          <thead><tr><th>Empleado</th><th>EnNo</th><th>Tipo</th><th>Hora</th><th>Fuente</th></tr></thead>
+          <tbody id="log-tbody"></tbody>
+        </table>
+        <p id="log-empty" style="display:none; text-align:center; color:var(--text-muted); padding:30px;">Sin registros.</p>
+      </div>
+    </details>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="supabase.js"></script>
+  <script>
+    let parsedRecords = [];
+    let allLogRecords = [];
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('log-date').value = today;
+    document.getElementById('today-label').textContent =
+      `Empleados activos · ${new Date().toLocaleDateString('es-MX',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}`;
+
+    // ── File import ──────────────────────────────────────────
+    function handleDZ(e, over) { e.preventDefault(); document.querySelector('.drop-zone').classList.toggle('drag-over', over); }
+    function handleDrop(e) { e.preventDefault(); document.querySelector('.drop-zone').classList.remove('drag-over'); const f=e.dataTransfer.files[0]; if(f) processALOGFile(f); }
+    function handleFileSelect(inp) { if(inp.files && inp.files[0]) processALOGFile(inp.files[0]); }
+
+    function processALOGFile(file) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        parsedRecords = parseALOGFile(e.target.result);
+        const res = document.getElementById('import-result');
+        if (!parsedRecords.length) {
+          res.className='import-result err'; res.textContent='⚠ No se pudo parsear el archivo.'; res.style.display='block';
+          document.getElementById('btn-import').disabled=true; return;
+        }
+        res.className='import-result ok'; res.innerHTML=`✓ <strong>${parsedRecords.length} registros</strong> listos para importar`; res.style.display='block';
+        document.getElementById('btn-import').disabled=false;
+      };
+      reader.readAsText(file,'UTF-8');
+    }
+
+    async function doImport() {
+      if (!parsedRecords.length) return;
+      const btn=document.getElementById('btn-import');
+      btn.disabled=true; btn.querySelector('.btn-text').style.display='none'; btn.querySelector('.btn-loader').style.display='flex';
+      try {
+        const {inserted,skipped} = await insertAttendanceRecords(parsedRecords);
+        const res=document.getElementById('import-result');
+        res.className='import-result ok'; res.innerHTML=`✅ Importados: <strong>${inserted}</strong>. Duplicados omitidos: ${skipped}`;
+        parsedRecords=[];
+        document.getElementById('file-alog').value='';
+        await loadBoard();
+      } catch(err) {
+        const res=document.getElementById('import-result'); res.className='import-result err'; res.textContent='Error: '+err.message;
+      } finally {
+        btn.disabled=false; btn.querySelector('.btn-text').style.display=''; btn.querySelector('.btn-loader').style.display='none';
+      }
+    }
+
+    // ── Live board ───────────────────────────────────────────
+    async function loadBoard() {
+      document.getElementById('board-loading').style.display='flex';
+      document.getElementById('working-board').innerHTML='';
+      document.getElementById('no-working').style.display='none';
+
+      try {
+        // Get today's most recent record per employee
+        const todayRecords = await getTodayAttendance();
+        allLogRecords = todayRecords;
+
+        // Build status map: most recent per en_no
+        const statusMap = {};
+        [...todayRecords].reverse().forEach(r => {
+          if (!statusMap[r.en_no]) statusMap[r.en_no] = r;
+        });
+
+        const working = Object.values(statusMap).filter(r => r.type === 'in');
+        const outCount = Object.values(statusMap).filter(r => r.type === 'out').length;
+
+        document.getElementById('s-working').textContent = working.length;
+        document.getElementById('s-total').textContent   = todayRecords.length;
+        document.getElementById('s-out').textContent     = outCount;
+        document.getElementById('working-count-chip').textContent = `${working.length} activos`;
+
+        document.getElementById('board-loading').style.display='none';
+
+        if (!working.length) { document.getElementById('no-working').style.display='block'; filterLog(); return; }
+
+        // Render cards
+        const board = document.getElementById('working-board');
+        working.forEach(r => {
+          const entryTime = getEmployeeEntryTime(todayRecords, r.en_no);
+          const card = document.createElement('div');
+          card.className = 'emp-live-card working';
+          const initial = (r.employee_name || '?')[0].toUpperCase();
+          const t = new Date(r.check_time).toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});
+          const entryStr = entryTime ? new Date(entryTime).toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'}) : t;
+          card.innerHTML = `
+            <div class="emp-live-avatar">
+              <div class="status-ring"></div>
+              ${initial}
+            </div>
+            <div class="emp-live-name">${esc(r.employee_name)}</div>
+            <div class="chip-working-live"><span class="dot"></span>Trabajando</div>
+            <div class="emp-live-time">Desde ${entryStr}</div>`;
+          board.appendChild(card);
+        });
+
+        filterLog();
+      } catch(err) {
+        document.getElementById('board-loading').innerHTML=`<p style="color:#ef4444">Error: ${err.message}</p>`;
+      }
+    }
+
+    function getEmployeeEntryTime(records, enNo) {
+      // Most recent 'in' record for this en_no
+      const inRecords = records.filter(r => r.en_no === enNo && r.type === 'in');
+      if (!inRecords.length) return null;
+      return inRecords[inRecords.length-1].check_time;
+    }
+
+    // ── Log detail ───────────────────────────────────────────
+    function filterLog() {
+      const q    = (document.getElementById('log-search').value||'').toLowerCase();
+      const type = document.getElementById('log-type').value;
+      const filtered = allLogRecords.filter(r => {
+        const nm = r.employee_name.toLowerCase().includes(q) || r.en_no.includes(q);
+        const tp = !type || r.type === type;
+        return nm && tp;
+      });
+      const tbody = document.getElementById('log-tbody');
+      const empty = document.getElementById('log-empty');
+      tbody.innerHTML = '';
+      if (!filtered.length) { empty.style.display='block'; return; }
+      empty.style.display='none';
+      filtered.slice(0,200).forEach(r => {
+        const t = new Date(r.check_time).toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+        const tr = document.createElement('tr');
+        tr.innerHTML=`<td><strong>${esc(r.employee_name)}</strong></td><td style="font-family:monospace;font-size:0.78rem;color:var(--text-muted);">${r.en_no}</td><td>${r.type==='in'?'<span class="chip-in">↑ Entrada</span>':'<span class="chip-out-sm">↓ Salida</span>'}</td><td style="font-weight:600;">${t}</td><td style="color:var(--text-muted);font-size:0.78rem;">${r.source==='device_file'?'🖐 Checador':'✋ Manual'}</td>`;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function esc(s){const d=document.createElement('div');d.appendChild(document.createTextNode(s||''));return d.innerHTML;}
+
+    loadBoard();
+    setInterval(loadBoard, 60000);
+  </script>
+</body>
+</html>

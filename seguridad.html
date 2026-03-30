@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="robots" content="noindex, nofollow"/>
+  <title>Seguridad | Hotel Huayacán</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    .sec-layout { max-width:1200px; margin:0 auto; padding:32px 36px 80px; }
+    @media(max-width:768px){ .sec-layout{ padding:16px 16px 80px; } }
+
+    .sec-grid { display:grid; grid-template-columns:380px 1fr; gap:24px; }
+    @media(max-width:900px){ .sec-grid{ grid-template-columns:1fr; } }
+
+    /* Form card */
+    .form-sec-card { background:var(--bg-card); border:1px solid var(--border-light); border-radius:var(--radius-lg); padding:28px; position:sticky; top:80px; }
+    .form-sec-card h2 { font-size:1.1rem; font-weight:700; margin-bottom:4px; }
+    .form-sec-card .sub { font-size:0.82rem; color:var(--text-muted); margin-bottom:24px; }
+
+    /* Type buttons */
+    .type-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:20px; }
+    .type-btn {
+      padding:12px 8px; border:1px solid var(--border); border-radius:var(--radius);
+      background:var(--bg-input); color:var(--text-muted); font-size:0.82rem; font-weight:600;
+      cursor:pointer; text-align:center; transition:all var(--transition); line-height:1.3;
+    }
+    .type-btn.active { border-color:var(--accent-green); background:rgba(16,185,129,0.08); color:var(--accent-green); }
+    .type-btn span { display:block; font-size:1.2rem; margin-bottom:4px; }
+
+    /* Dest buttons */
+    .dest-row { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px; }
+    .dest-btn {
+      padding:7px 14px; border:1px solid var(--border); border-radius:50px; background:var(--bg-input);
+      color:var(--text-muted); font-size:0.8rem; font-weight:600; cursor:pointer; transition:all var(--transition);
+    }
+    .dest-btn.active { border-color:var(--vibrant-2); background:rgba(59,130,246,0.08); color:var(--vibrant-2); }
+
+    /* Table styles */
+    .sec-table-wrap { background:var(--bg-card); border:1px solid var(--border-light); border-radius:var(--radius-lg); overflow:hidden; }
+    .sec-table { width:100%; border-collapse:collapse; }
+    .sec-table thead tr { background:rgba(255,255,255,0.03); border-bottom:1px solid var(--border-light); }
+    .sec-table th { padding:12px 16px; text-align:left; font-size:0.72rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; white-space:nowrap; }
+    .sec-table td { padding:12px 16px; border-bottom:1px solid rgba(255,255,255,0.04); font-size:0.85rem; vertical-align:middle; }
+    .sec-table tr:last-child td { border-bottom:none; }
+    .sec-table tr:hover td { background:rgba(255,255,255,0.02); }
+
+    .chip-proveedor { background:rgba(245,158,11,0.12); color:#f59e0b; padding:3px 10px; border-radius:50px; font-size:0.72rem; font-weight:700; }
+    .chip-cliente   { background:rgba(59,130,246,0.12);  color:var(--vibrant-2); padding:3px 10px; border-radius:50px; font-size:0.72rem; font-weight:700; }
+    .chip-evento    { background:rgba(162,155,254,0.15); color:#a78bfa; padding:3px 10px; border-radius:50px; font-size:0.72px; font-weight:700; padding:3px 10px; border-radius:50px; }
+    .chip-inside    { background:rgba(16,185,129,0.12);  color:var(--accent-green); padding:3px 10px; border-radius:50px; font-size:0.72rem; font-weight:700; }
+    .chip-exited    { background:rgba(148,163,184,0.1);  color:var(--text-muted);   padding:3px 10px; border-radius:50px; font-size:0.72rem; font-weight:700; }
+
+    .btn-exit-small { background:none; border:1px solid var(--border-focus); color:var(--text-muted); padding:4px 10px; border-radius:8px; cursor:pointer; font-size:0.75rem; transition:all var(--transition); }
+    .btn-exit-small:hover { border-color:var(--accent-green); color:var(--accent-green); background:rgba(16,185,129,0.06); }
+
+    .sec-toolbar { display:flex; align-items:center; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
+    .sec-toolbar .search-wrap { flex:1; min-width:180px; }
+    .date-input { padding:8px 12px; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); color:var(--text-main); font-family:inherit; font-size:0.88rem; outline:none; transition:all var(--transition); }
+    .date-input:focus { border-color:var(--accent-green); }
+
+    .count-inside { display:inline-flex; align-items:center; gap:6px; font-size:0.85rem; color:var(--accent-green); font-weight:600; }
+  </style>
+</head>
+<body>
+  <header class="navbar">
+    <div class="logo">
+      <div class="logo-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      </div>
+      <span class="logo-text">Huayacán</span>
+    </div>
+    <div class="nav-right">
+      <span class="admin-badge">🛡️ Seguridad</span>
+      <button class="btn-ghost btn-sm" onclick="doLogout()">Salir</button>
+    </div>
+  </header>
+
+  <div class="sec-layout">
+    <div style="margin-bottom:24px;">
+      <h1 style="font-size:1.8rem; font-weight:700; margin-bottom:4px;">Panel de Seguridad</h1>
+      <p style="color:var(--text-muted); font-size:0.9rem;">Registro de entrada y salida de visitantes, proveedores y clientes.</p>
+    </div>
+
+    <div class="sec-grid">
+      <!-- FORM -->
+      <div>
+        <div class="form-sec-card">
+          <h2>Nuevo Registro</h2>
+          <p class="sub">Registra la entrada de un visitante, proveedor o cliente.</p>
+
+          <!-- Tipo -->
+          <label class="form-group" style="margin-bottom:10px;">
+            <span style="font-size:0.78rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;">Tipo de visita</span>
+          </label>
+          <div class="type-grid" style="margin-top:6px;">
+            <button class="type-btn active" data-type="proveedor" onclick="selectType('proveedor')">
+              <span>🚚</span>Proveedor
+            </button>
+            <button class="type-btn" data-type="cliente" onclick="selectType('cliente')">
+              <span>👤</span>Cliente
+            </button>
+            <button class="type-btn" data-type="evento" onclick="selectType('evento')">
+              <span>🎉</span>Evento
+            </button>
+            <button class="type-btn" data-type="otro" onclick="selectType('otro')">
+              <span>📋</span>Otro
+            </button>
+          </div>
+
+          <!-- Destino -->
+          <div class="form-group">
+            <label style="font-size:0.78rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;">Destino</label>
+            <div class="dest-row" style="margin-top:8px;">
+              <button class="dest-btn active" data-dest="restaurante" onclick="selectDest('restaurante')">🍽️ Restaurante</button>
+              <button class="dest-btn" data-dest="hotel" onclick="selectDest('hotel')">🛏️ Hotel</button>
+              <button class="dest-btn" data-dest="evento" onclick="selectDest('evento')">🎊 Evento</button>
+              <button class="dest-btn" data-dest="oficina" onclick="selectDest('oficina')">🏢 Oficina</button>
+            </div>
+          </div>
+
+          <!-- Form fields -->
+          <div class="form-group">
+            <label for="s-nombre">Nombre completo <span class="req">*</span></label>
+            <input type="text" id="s-nombre" placeholder="Nombre del visitante" autocomplete="off"/>
+            <p class="field-error" id="err-nombre"></p>
+          </div>
+          <div class="form-group">
+            <label for="s-empresa">Empresa / Organización</label>
+            <input type="text" id="s-empresa" placeholder="Nombre de la empresa (opcional)"/>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <div class="form-group">
+              <label for="s-placa">Placa del vehículo</label>
+              <input type="text" id="s-placa" placeholder="Opcional" style="text-transform:uppercase;"/>
+            </div>
+            <div class="form-group">
+              <label for="s-guardia">Guardia <span class="req">*</span></label>
+              <select id="s-guardia" style="width:100%;padding:12px;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-main);font-family:inherit;font-size:0.88rem;outline:none;cursor:pointer;transition:all var(--transition);">
+                <option value="">Selecciona la guardia…</option>
+                <!-- Lista de personal de seguridad -->
+                <!-- El usuario entregará la lista completa, agregar aquí -->
+                <option>Guardia 1</option>
+                <option>Guardia 2</option>
+                <option>Guardia 3</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="s-notas">Notas adicionales</label>
+            <textarea id="s-notas" style="width:100%;padding:12px;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-main);font-family:inherit;font-size:0.88rem;resize:vertical;min-height:60px;outline:none;" placeholder="Observaciones..."></textarea>
+          </div>
+
+          <div id="sec-form-error" class="alert-error" style="display:none;margin-bottom:16px;">
+            <span id="sec-form-error-msg"></span>
+          </div>
+
+          <button class="btn-primary btn-full" onclick="registrarEntrada()">
+            <span class="btn-text">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+              Registrar Entrada
+            </span>
+            <span class="btn-loader" style="display:none;"><svg class="spinner" viewBox="0 0 50 50"><circle cx="25" cy="25" r="20" fill="none" stroke-width="4"></circle></svg></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- TABLE -->
+      <div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+          <div>
+            <span style="font-size:1rem;font-weight:700;">Registro del día</span>
+            <span id="inside-count" class="count-inside" style="margin-left:12px;">
+              <span class="working-dot" style="width:8px;height:8px;border-radius:50%;background:var(--accent-green);display:inline-block;"></span>
+              <span>0 dentro</span>
+            </span>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input type="date" id="sec-date" class="date-input" onchange="loadVisitorLog()"/>
+            <button class="btn-ghost btn-sm" onclick="loadVisitorLog()">↻ Actualizar</button>
+          </div>
+        </div>
+
+        <div class="sec-toolbar">
+          <div class="search-wrap">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="sec-search" placeholder="Buscar nombre, empresa…" oninput="filterSecTable()"/>
+          </div>
+          <select id="sec-type-filter" onchange="filterSecTable()" style="padding:8px 12px; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); color:var(--text-main); font-family:inherit; font-size:0.88rem; cursor:pointer; outline:none;">
+            <option value="">Todos</option>
+            <option value="proveedor">Proveedores</option>
+            <option value="cliente">Clientes</option>
+            <option value="evento">Eventos</option>
+          </select>
+        </div>
+
+        <div class="sec-table-wrap">
+          <div id="sec-loading" class="loading-center"><svg class="spinner spinner-lg" viewBox="0 0 50 50"><circle cx="25" cy="25" r="20" fill="none" stroke-width="4"></circle></svg></div>
+          <div id="sec-table-content" style="display:none; overflow-x:auto;">
+            <table class="sec-table">
+              <thead>
+                <tr>
+                  <th>Tipo</th>
+                  <th>Nombre</th>
+                  <th>Empresa</th>
+                  <th>Destino</th>
+                  <th>Visita a</th>
+                  <th>Entrada</th>
+                  <th>Salida</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody id="sec-tbody"></tbody>
+            </table>
+            <p id="sec-empty" style="display:none;text-align:center;color:var(--text-muted);padding:40px;">Sin registros para esta fecha.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="supabase.js"></script>
+  <script>
+    let selectedType = 'proveedor';
+    let selectedDest = 'restaurante';
+    let allLogs = [];
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('sec-date').value = today;
+
+    function selectType(t) {
+      selectedType = t;
+      document.querySelectorAll('.type-btn').forEach(b => b.classList.toggle('active', b.dataset.type === t));
+    }
+
+    function selectDest(d) {
+      selectedDest = d;
+      document.querySelectorAll('.dest-btn').forEach(b => b.classList.toggle('active', b.dataset.dest === d));
+    }
+
+    async function registrarEntrada() {
+      const nombre  = document.getElementById('s-nombre').value.trim();
+      const guardia = document.getElementById('s-guardia').value.trim();
+      const errDiv  = document.getElementById('sec-form-error');
+      errDiv.style.display = 'none';
+      if (!nombre) {
+        document.getElementById('err-nombre').textContent = 'El nombre es obligatorio.';
+        document.getElementById('err-nombre').style.display = 'block';
+        return;
+      }
+      if (!guardia) {
+        showSecErr('Ingresa el nombre del guardia que registra.');
+        return;
+      }
+      document.getElementById('err-nombre').style.display = 'none';
+
+      const btn = document.querySelector('button[onclick="registrarEntrada()"]');
+      btn.disabled = true;
+      btn.querySelector('.btn-text').style.display   = 'none';
+      btn.querySelector('.btn-loader').style.display = 'flex';
+
+      try {
+        await insertVisitorLog({
+          tipo:             selectedType,
+          destino:          selectedDest,
+          nombre,
+          empresa:          document.getElementById('s-empresa').value.trim() || null,
+          placa_vehiculo:   document.getElementById('s-placa').value.trim().toUpperCase() || null,
+          notas:            document.getElementById('s-notas').value.trim() || null,
+          guard_name:       guardia,
+          entry_time:       new Date().toISOString(),
+        });
+        // Reset form (keep guardia name)
+        document.getElementById('s-nombre').value  = '';
+        document.getElementById('s-empresa').value = '';
+        document.getElementById('s-persona').value = '';
+        document.getElementById('s-placa').value   = '';
+        document.getElementById('s-notas').value   = '';
+        await loadVisitorLog();
+      } catch(err) {
+        showSecErr('Error al registrar: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.querySelector('.btn-text').style.display   = 'flex';
+        btn.querySelector('.btn-loader').style.display = 'none';
+      }
+    }
+
+    function showSecErr(msg) {
+      const el = document.getElementById('sec-form-error');
+      document.getElementById('sec-form-error-msg').textContent = msg;
+      el.style.display = 'flex';
+    }
+
+    async function marcarSalida(id) {
+      try {
+        await setVisitorExit(id, new Date().toISOString());
+        await loadVisitorLog();
+      } catch(err) {
+        alert('Error al registrar salida: ' + err.message);
+      }
+    }
+
+    async function loadVisitorLog() {
+      document.getElementById('sec-loading').style.display      = 'flex';
+      document.getElementById('sec-table-content').style.display = 'none';
+      try {
+        const dateVal = document.getElementById('sec-date').value || today;
+        allLogs = await getVisitorLogs(dateVal);
+        filterSecTable();
+      } catch(err) {
+        document.getElementById('sec-loading').innerHTML = `<p style="color:#ef4444">Error: ${err.message}</p>`;
+        return;
+      }
+      document.getElementById('sec-loading').style.display      = 'none';
+      document.getElementById('sec-table-content').style.display = 'block';
+    }
+
+    function filterSecTable() {
+      const q    = (document.getElementById('sec-search').value || '').toLowerCase();
+      const tipo = document.getElementById('sec-type-filter').value;
+      const filtered = allLogs.filter(r => {
+        const nm = (r.nombre + ' ' + (r.empresa||'')).toLowerCase().includes(q);
+        const tp = !tipo || r.tipo === tipo;
+        return nm && tp;
+      });
+
+      const tbody = document.getElementById('sec-tbody');
+      const empty = document.getElementById('sec-empty');
+      tbody.innerHTML = '';
+
+      const inside = filtered.filter(r => !r.exit_time).length;
+      const insideEl = document.getElementById('inside-count');
+      insideEl.innerHTML = `<span style="width:8px;height:8px;border-radius:50%;background:var(--accent-green);display:inline-block;"></span><span>${inside} dentro</span>`;
+
+      if (!filtered.length) { empty.style.display='block'; return; }
+      empty.style.display='none';
+
+      const tipoChips = { proveedor:'chip-proveedor', cliente:'chip-cliente', evento:'chip-evento', otro:'chip-out' };
+      const tipoLabels= { proveedor:'🚚 Proveedor', cliente:'👤 Cliente', evento:'🎉 Evento', otro:'📋 Otro' };
+      const destLabels= { restaurante:'🍽️ Restaurante', hotel:'🛏️ Hotel', evento:'🎊 Evento', oficina:'🏢 Oficina' };
+
+      filtered.forEach(r => {
+        const entryT = new Date(r.entry_time).toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});
+        const exitT  = r.exit_time ? new Date(r.exit_time).toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'}) : '–';
+        const inside = !r.exit_time;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><span class="${tipoChips[r.tipo] || 'chip-out'}">${tipoLabels[r.tipo] || r.tipo}</span></td>
+          <td><strong>${esc(r.nombre)}</strong></td>
+          <td style="color:var(--text-muted);">${esc(r.empresa || '–')}</td>
+          <td style="color:var(--text-muted);">${destLabels[r.destino] || r.destino}</td>
+          <td style="color:var(--text-muted);">${esc(r.persona_a_visitar || '–')}</td>
+          <td style="font-weight:600;">${entryT}</td>
+          <td style="font-weight:600;">${exitT}</td>
+          <td>
+            ${inside
+              ? `<div style="display:flex;align-items:center;gap:8px;"><span class="chip-inside">Dentro</span><button class="btn-exit-small" onclick="marcarSalida('${r.id}')">Salida</button></div>`
+              : `<span class="chip-exited">Salió</span>`
+            }
+          </td>`;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function esc(str) {
+      const d=document.createElement('div'); d.appendChild(document.createTextNode(str||'')); return d.innerHTML;
+    }
+
+    async function doLogout() { window.location.href = 'index.html'; }
+
+    loadVisitorLog();
+    setInterval(loadVisitorLog, 60000);
+  </script>
+</body>
+</html>

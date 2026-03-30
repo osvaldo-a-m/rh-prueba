@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Mi Expediente | Hotel Huayacán</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="logo">
+      <div class="logo-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      </div>
+      <span class="logo-text">Huayacán</span>
+    </div>
+    <div class="nav-right">
+      <span class="user-greeting" id="user-greeting">Mi Expediente</span>
+      <button class="btn-ghost btn-sm" onclick="doLogout()">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <main class="container profile-container">
+
+    <!-- Loading -->
+    <div id="loading-state" class="loading-center">
+      <svg class="spinner spinner-lg" viewBox="0 0 50 50"><circle cx="25" cy="25" r="20" fill="none" stroke-width="4"></circle></svg>
+      <p>Cargando tu expediente…</p>
+    </div>
+
+    <div id="profile-content" style="display:none;">
+
+      <!-- Header card -->
+      <div class="profile-header-card">
+        <div class="profile-avatar">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+        <div class="profile-header-info">
+          <h1 class="profile-name" id="profile-name">–</h1>
+          <p class="profile-sub" id="profile-email-display">–</p>
+        </div>
+        <div class="profile-completeness">
+          <div class="completeness-ring">
+            <svg viewBox="0 0 36 36" class="ring-svg">
+              <circle class="ring-bg" cx="18" cy="18" r="15.9"/>
+              <circle class="ring-fill" id="ring-fill" cx="18" cy="18" r="15.9" stroke-dasharray="0 100"/>
+            </svg>
+            <span class="ring-pct" id="ring-pct">0%</span>
+          </div>
+          <span class="completeness-label">Expediente<br>completo</span>
+        </div>
+      </div>
+
+      <!-- Two column layout -->
+      <div class="profile-grid">
+
+        <!-- LEFT: Personal Info -->
+        <section class="card">
+          <div class="card-section-header">
+            <h2 class="section-title">
+              <span class="section-icon">👤</span> Datos Personales
+            </h2>
+            <button class="btn-ghost btn-sm" id="edit-btn" onclick="toggleEdit()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              Editar
+            </button>
+          </div>
+
+          <div id="info-view">
+            <div class="info-grid">
+              <div class="info-item"><span class="info-label">Nombre completo</span><span class="info-val" id="v-nombre">–</span></div>
+              <div class="info-item"><span class="info-label">Edad</span><span class="info-val" id="v-edad">–</span></div>
+              <div class="info-item info-item-full"><span class="info-label">Dirección</span><span class="info-val" id="v-direccion">–</span></div>
+              <div class="info-item"><span class="info-label">Teléfono</span><span class="info-val" id="v-telefono">–</span></div>
+              <div class="info-item"><span class="info-label">Correo personal</span><span class="info-val" id="v-email">–</span></div>
+            </div>
+          </div>
+
+          <div id="info-edit" style="display:none;">
+            <form id="edit-form" novalidate>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>Nombre completo <span class="req">*</span></label>
+                  <input type="text" id="e-nombre" placeholder="Nombre completo" required />
+                  <p class="field-error" id="ee-nombre"></p>
+                </div>
+                <div class="form-group">
+                  <label>Edad <span class="req">*</span></label>
+                  <input type="number" id="e-edad" min="16" max="80" required />
+                  <p class="field-error" id="ee-edad"></p>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Dirección <span class="req">*</span></label>
+                <input type="text" id="e-direccion" required />
+                <p class="field-error" id="ee-direccion"></p>
+              </div>
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>Teléfono <span class="req">*</span></label>
+                  <input type="tel" id="e-telefono" maxlength="15" required />
+                  <p class="field-error" id="ee-telefono"></p>
+                </div>
+                <div class="form-group">
+                  <label>Correo personal <span class="optional-badge">Opcional</span></label>
+                  <input type="email" id="e-email" />
+                </div>
+              </div>
+              <div class="form-actions-row">
+                <button type="button" class="btn-ghost btn-sm" onclick="cancelEdit()">Cancelar</button>
+                <button type="submit" class="btn-primary btn-sm">
+                  <span class="btn-text">Guardar cambios</span>
+                  <span class="btn-loader" style="display:none;"><svg class="spinner spinner-sm" viewBox="0 0 50 50"><circle cx="25" cy="25" r="20" fill="none" stroke-width="4"></circle></svg></span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <!-- RIGHT: Documents -->
+        <section class="card">
+          <div class="card-section-header">
+            <h2 class="section-title">
+              <span class="section-icon">📂</span> Mis Documentos
+            </h2>
+          </div>
+          <div id="docs-list">
+            <div class="loading-center small"><svg class="spinner" viewBox="0 0 50 50"><circle cx="25" cy="25" r="20" fill="none" stroke-width="4"></circle></svg></div>
+          </div>
+        </section>
+
+      </div><!-- /.profile-grid -->
+    </div><!-- /#profile-content -->
+  </main>
+
+  <!-- Upload Modal -->
+  <div class="modal-overlay" id="upload-modal" style="display:none;">
+    <div class="modal">
+      <button class="modal-close" onclick="closeUploadModal()">✕</button>
+      <div class="modal-icon">📄</div>
+      <h2 id="upload-modal-title">Subir documento</h2>
+      <p id="upload-modal-desc" style="color:var(--text-muted); margin-bottom:24px; font-size:0.9rem;"></p>
+
+      <div class="upload-zone" id="modal-zone" onclick="triggerModalUpload()" ondragover="handleModalDragOver(event)" ondrop="handleModalDrop(event)">
+        <div class="upload-icon">📄</div>
+        <p class="upload-label">Clic o arrastra el archivo</p>
+        <p class="upload-sub">JPG, PNG o PDF · Máx. 15 MB</p>
+        <div class="file-preview" id="modal-preview" style="display:none;"></div>
+      </div>
+      <input type="file" id="modal-file-input" accept="image/*,.pdf" style="display:none;" onchange="handleModalFile(this)" />
+
+      <div id="modal-error" class="alert-error" style="display:none; margin-top:16px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/></svg>
+        <span id="modal-error-msg"></span>
+      </div>
+      <button class="btn-primary btn-full" id="modal-upload-btn" onclick="confirmUpload()" style="margin-top:24px;" disabled>
+        <span class="btn-text">Subir documento</span>
+        <span class="btn-loader" style="display:none;"><svg class="spinner" viewBox="0 0 50 50"><circle cx="25" cy="25" r="20" fill="none" stroke-width="4"></circle></svg></span>
+      </button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="supabase.js"></script>
+  <script>
+    let currentUser = null;
+    let currentProfile = null;
+    let currentDocs = [];
+    let modalTipo = null;
+    let modalFile = null;
+    let modalIsRequired = false;
+
+    const ALL_DOCS = [
+      { tipo:'solicitud', label:'Solicitud de Empleo y Foto / CV', icon:'📋', required:true },
+      { tipo:'ine',       label:'INE',                              icon:'🪪', required:true },
+      { tipo:'acta',      label:'Acta de Nacimiento',               icon:'📜', required:true },
+      { tipo:'curp',      label:'CURP',                             icon:'🔏', required:true },
+      { tipo:'rfc',       label:'RFC',                              icon:'💼', required:true },
+      { tipo:'credito',   label:'Crédito INFONAVIT / FONACOT',      icon:'🏦', required:true },
+      { tipo:'comprobante',label:'Comprobante de Domicilio',        icon:'🏡', required:true },
+      { tipo:'estudios',  label:'Comprobante de Estudios',          icon:'🎓', required:true },
+      { tipo:'estado_cuenta',label:'Estado de Cuenta CLABE BBVA',  icon:'💳', required:true },
+      { tipo:'nss',       label:'NSS',                              icon:'🏥', required:false },
+      { tipo:'recomendacion',label:'Cartas de Recomendación',      icon:'📝', required:false },
+    ];
+
+    (async () => {
+      const session = await getSession();
+      if (!session) { window.location.href = 'index.html'; return; }
+      currentUser = session.user;
+      try {
+        currentProfile = await getProfile(currentUser.id);
+        // 🧪 MODO PRUEBA: redirección a admin desactivada temporalmente
+        // if (currentProfile.role === 'admin') { window.location.href = 'admin.html'; return; }
+        renderProfile(currentProfile);
+        currentDocs = await getDocuments(currentUser.id);
+        renderDocs(currentDocs);
+        document.getElementById('loading-state').style.display = 'none';
+        document.getElementById('profile-content').style.display = 'block';
+      } catch (err) {
+        console.error(err);
+        alert('Error cargando tu expediente.');
+      }
+    })();
+
+    async function doLogout() { 
+      await signOut(); 
+      localStorage.clear(); sessionStorage.clear(); 
+      window.location.href = 'index.html'; 
+    }
+
+    function renderProfile(p) {
+      document.getElementById('user-greeting').textContent = p.nombre_completo ? p.nombre_completo.split(' ')[0] : 'Mi Expediente';
+      document.getElementById('profile-name').textContent = p.nombre_completo || '–';
+      document.getElementById('profile-email-display').textContent = currentUser.email;
+      document.getElementById('v-nombre').textContent   = p.nombre_completo || '–';
+      document.getElementById('v-edad').textContent     = p.edad ? `${p.edad} años` : '–';
+      document.getElementById('v-direccion').textContent= p.direccion || '–';
+      document.getElementById('v-telefono').textContent = p.telefono || '–';
+      document.getElementById('v-email').textContent    = p.email_contacto || 'No registrado';
+      // Fill edit form
+      document.getElementById('e-nombre').value    = p.nombre_completo || '';
+      document.getElementById('e-edad').value      = p.edad || '';
+      document.getElementById('e-direccion').value = p.direccion || '';
+      document.getElementById('e-telefono').value  = p.telefono || '';
+      document.getElementById('e-email').value     = p.email_contacto || '';
+    }
+
+    function renderDocs(docs) {
+      const uploaded = ALL_DOCS.filter(d => docs.find(ud => ud.tipo === d.tipo)).length;
+      const pct = Math.round((uploaded / ALL_DOCS.length) * 100);
+      // Ring
+      const r = 15.9;
+      const circ = 2 * Math.PI * r;
+      const dash = (pct / 100) * circ;
+      document.getElementById('ring-fill').setAttribute('stroke-dasharray', `${dash.toFixed(1)} ${(circ - dash).toFixed(1)}`);
+      document.getElementById('ring-pct').textContent = `${pct}%`;
+
+      const listEl = document.getElementById('docs-list');
+      listEl.innerHTML = '';
+
+      ALL_DOCS.forEach(docDef => {
+        const existing = docs.find(d => d.tipo === docDef.tipo);
+        const div = document.createElement('div');
+        div.className = `doc-list-item${existing ? ' uploaded' : ''}`;
+        div.innerHTML = `
+          <div class="doc-list-left">
+            <span class="doc-icon-sm">${docDef.icon}</span>
+            <div>
+              <span class="doc-list-name">${docDef.label}</span>
+              <span class="doc-list-status ${existing ? 'status-ok' : (docDef.required ? 'status-missing' : 'status-optional')}">
+                ${existing ? `✓ Subido · ${formatDate(existing.uploaded_at)}` : (docDef.required ? '⚠ Pendiente' : 'Opcional')}
+              </span>
+            </div>
+          </div>
+          <div class="doc-list-actions">
+            ${existing ? `<button class="btn-ghost btn-xs" onclick="viewDoc('${existing.storage_path}')">Ver</button>` : ''}
+            <button class="btn-outline btn-xs" onclick="openUploadModal('${docDef.tipo}','${docDef.label.replace(/'/g,"\\'")}',${docDef.required})">
+              ${existing ? 'Actualizar' : 'Subir'}
+            </button>
+          </div>`;
+        listEl.appendChild(div);
+      });
+    }
+
+    function formatDate(iso) {
+      if (!iso) return '';
+      return new Date(iso).toLocaleDateString('es-MX', { day:'2-digit', month:'short', year:'numeric' });
+    }
+
+    // ── Edit Profile ───────────────────────────────────────
+    function toggleEdit() {
+      document.getElementById('info-view').style.display = 'none';
+      document.getElementById('info-edit').style.display = 'block';
+      document.getElementById('edit-btn').style.display  = 'none';
+    }
+
+    function cancelEdit() {
+      document.getElementById('info-view').style.display = 'block';
+      document.getElementById('info-edit').style.display = 'none';
+      document.getElementById('edit-btn').style.display  = 'flex';
+    }
+
+    document.getElementById('edit-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const nombre    = document.getElementById('e-nombre').value.trim();
+      const edad      = parseInt(document.getElementById('e-edad').value);
+      const direccion = document.getElementById('e-direccion').value.trim();
+      const telefono  = document.getElementById('e-telefono').value.trim();
+      const emailC    = document.getElementById('e-email').value.trim();
+      let valid = true;
+      ['nombre','edad','direccion','telefono'].forEach(f => { const el = document.getElementById(`ee-${f}`); if(el) el.style.display='none'; });
+      if (!nombre)   { showErrP('ee-nombre','El nombre es obligatorio'); valid=false; }
+      if (!edad || edad<16) { showErrP('ee-edad','Edad inválida'); valid=false; }
+      if (!direccion){ showErrP('ee-direccion','La dirección es obligatoria'); valid=false; }
+      if (!telefono || telefono.length<10){ showErrP('ee-telefono','Teléfono inválido'); valid=false; }
+      if (!valid) return;
+      const btn = document.querySelector('#edit-form button[type=submit]');
+      btn.disabled = true;
+      btn.querySelector('.btn-text').style.display='none';
+      btn.querySelector('.btn-loader').style.display='flex';
+      try {
+        currentProfile = await upsertProfile(currentUser.id, { nombre_completo:nombre, edad, direccion, telefono, email_contacto: emailC||null });
+        renderProfile(currentProfile);
+        cancelEdit();
+      } catch(err) { alert('Error guardando cambios: '+err.message); }
+      finally { btn.disabled=false; btn.querySelector('.btn-text').style.display=''; btn.querySelector('.btn-loader').style.display='none'; }
+    });
+
+    function showErrP(id, msg) { const el=document.getElementById(id); if(el){el.textContent=msg;el.style.display='block';} }
+
+    // ── Upload Modal ───────────────────────────────────────
+    function openUploadModal(tipo, label, required) {
+      modalTipo = tipo; modalIsRequired = required; modalFile = null;
+      document.getElementById('upload-modal-title').textContent = label;
+      document.getElementById('upload-modal-desc').textContent  = required ? 'Documento obligatorio · JPG, PNG o PDF' : 'Documento opcional · JPG, PNG o PDF';
+      const prev = document.getElementById('modal-preview');
+      prev.style.display='none'; prev.innerHTML='';
+      document.getElementById('modal-zone').querySelector('.upload-icon').style.display='';
+      document.getElementById('modal-zone').querySelector('.upload-label').style.display='';
+      document.getElementById('modal-zone').querySelector('.upload-sub').style.display='';
+      document.getElementById('modal-error').style.display='none';
+      document.getElementById('modal-upload-btn').disabled=true;
+      document.getElementById('modal-file-input').value='';
+      document.getElementById('upload-modal').style.display='flex';
+    }
+
+    function closeUploadModal() { document.getElementById('upload-modal').style.display='none'; }
+
+    document.getElementById('upload-modal').addEventListener('click', e => {
+      if (e.target === document.getElementById('upload-modal')) closeUploadModal();
+    });
+
+    function triggerModalUpload() { document.getElementById('modal-file-input').click(); }
+    function handleModalDragOver(e) { e.preventDefault(); }
+    function handleModalDrop(e) { e.preventDefault(); const f=e.dataTransfer.files[0]; if(f) processModalFile(f); }
+    function handleModalFile(input) { if(input.files && input.files[0]) processModalFile(input.files[0]); }
+
+    function processModalFile(file) {
+      const sizeMB = file.size/(1024*1024);
+      const errEl  = document.getElementById('modal-error');
+      if (sizeMB > 15) { errEl.querySelector('span').textContent=`Archivo muy grande (${sizeMB.toFixed(1)} MB). Máx 15 MB.`; errEl.style.display='flex'; return; }
+      if (!file.type.startsWith('image/') && file.type !== 'application/pdf') { errEl.querySelector('span').textContent='Solo se aceptan imágenes o PDF.'; errEl.style.display='flex'; return; }
+      errEl.style.display='none';
+      modalFile = file;
+      const prev = document.getElementById('modal-preview');
+      const zone = document.getElementById('modal-zone');
+      const img  = file.type.startsWith('image/') ? `<img src="${URL.createObjectURL(file)}" alt="preview" />` : `<span class="file-emoji">📄</span>`;
+      prev.innerHTML = `<div class="file-preview-item">${img}<span class="file-name">${file.name}</span><span class="file-size">${sizeMB.toFixed(2)} MB</span></div>`;
+      zone.querySelector('.upload-icon').style.display='none';
+      zone.querySelector('.upload-label').style.display='none';
+      zone.querySelector('.upload-sub').style.display='none';
+      prev.style.display='block';
+      document.getElementById('modal-upload-btn').disabled=false;
+    }
+
+    async function confirmUpload() {
+      if (!modalFile || !modalTipo) return;
+      const btn = document.getElementById('modal-upload-btn');
+      btn.disabled=true; btn.querySelector('.btn-text').style.display='none'; btn.querySelector('.btn-loader').style.display='flex';
+      try {
+        await uploadDocument(currentUser.id, modalTipo, modalFile, modalIsRequired);
+        currentDocs = await getDocuments(currentUser.id);
+        renderDocs(currentDocs);
+        closeUploadModal();
+      } catch(err) {
+        const errEl = document.getElementById('modal-error');
+        errEl.querySelector('span').textContent = 'Error al subir: '+err.message;
+        errEl.style.display='flex';
+      } finally { btn.disabled=false; btn.querySelector('.btn-text').style.display=''; btn.querySelector('.btn-loader').style.display='none'; }
+    }
+
+    async function viewDoc(path) {
+      try {
+        const url = await getDocumentUrl(path);
+        window.open(url, '_blank');
+      } catch(err) { alert('Error al abrir documento: '+err.message); }
+    }
+  </script>
+</body>
+</html>
